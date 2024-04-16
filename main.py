@@ -1,40 +1,81 @@
 import tkinter as tk
 
 class MainWindow(tk.Tk):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.title("Ηλεκτρονική δανειστική βιβλιοθήκη")
         self.geometry("1000x800")
 
-        # Main frame
-        self.main_frame = tk.Frame(self)
-        self.main_frame.pack(fill="both", expand=True)
+        container = tk.Frame(self)
+        container.pack(side="top", fill="both", expand=True)
+        container.grid_rowconfigure(0, weight=1)
+        container.grid_columnconfigure(0, weight=1)
 
-        # Widgets
-        # Widgets for the main page
-        self.homepage_label = tk.Label(self.main_frame, text="Αρχική σελίδα", font=("Helvetica", 16))
-        self.homepage_label.pack(pady=20)
+        self.frames = {}
 
-        # Books button
-        self.books_canvas = tk.Canvas(self.main_frame, width=400, height=400, bg="white")
-        self.books_canvas.pack(side="left", padx=50)
-        self.books_rectangle = self.books_canvas.create_rectangle(0, 0, 400, 400, fill="#D7D0C2")
-        self.books_text = self.books_canvas.create_text(200, 200, text="Βιβλία", fill="black", font=("Helvetica", 40))
-        self.books_canvas.tag_bind(self.books_rectangle, "<Button-1>", self.onClickBooks)
+        for F in (HomePage, Books, Users):
+            frame = F(container, self)
+            self.frames[F] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+        
+        self.show_frame(HomePage)
+    
+    def show_frame(self, context):
+        frame = self.frames[context]
+        frame.tkraise()
 
-        # Users button
-        self.users_canvas = tk.Canvas(self.main_frame, width=400, height=400, bg="white")
-        self.users_canvas.pack(side="right", padx=50)
-        self.users_rectangle = self.users_canvas.create_rectangle(0, 0, 400, 400, fill="#D7D0C2")
-        self.users_text = self.users_canvas.create_text(200, 200, text="Χρήστες", fill="black", font=("Helvetica", 40))
-        self.users_canvas.tag_bind(self.users_rectangle, "<Button-1>", self.onClickUsers)
+class HomePage(tk.Frame):
+	def __init__(self, parent, controller):
+		tk.Frame.__init__(self, parent)
+		label = tk.Label(self, text="Αρχική σελίδα", font=("Helvetica", 16))
+		label.pack(padx=20, pady=20)
+		
+        # Books Button
+		rawBooksImage = tk.PhotoImage(file="./images/books.png")
+		resizedBooksImage = rawBooksImage.subsample(2, 2)  
+		booksButton = tk.Button(self, image=resizedBooksImage, command=lambda: controller.show_frame(Books))
+		booksButton.image = resizedBooksImage  
+		booksButton.pack(side="left", padx=100)
+		
+        # Users Button
+		rawUsersImage = tk.PhotoImage(file="./images/users.png")
+		resizedUsersImage = rawUsersImage.subsample(4, 4)  
+		usersButton = tk.Button(self, image=resizedUsersImage, command=lambda: controller.show_frame(Books))
+		usersButton.image = resizedUsersImage  
+		usersButton.pack(side="right", padx=100)
 
-    def onClickBooks(self, event):
-        print("Βιβλία")
+class Books(tk.Frame):
+	def __init__(self, parent, controller):
+		tk.Frame.__init__(self, parent)
 
-    def onClickUsers(self, event):
-        print("Χρήστες")
+		label = tk.Label(self, text="Βιβλία", font=("Helvetica", 16))
+		label.pack(padx=10, pady=10)
+		start_page = tk.Button(self, text="Αρχική σελίδα", command=lambda:controller.show_frame(HomePage))
+		start_page.pack()
+		page_two = tk.Button(self, text="Χρήστες", command=lambda:controller.show_frame(Users))
+		page_two.pack()
 
-if __name__ == "__main__":
-    app = MainWindow()
-    app.mainloop()
+class Users(tk.Frame):
+	def __init__(self, parent, controller):
+		tk.Frame.__init__(self, parent)
+
+		label = tk.Label(self, text="Χρήστες", font=("Helvetica", 16))
+		label.pack(padx=10, pady=10)
+		start_page = tk.Button(self, text="Αρχική σελίδα", command=lambda:controller.show_frame(HomePage))
+		start_page.pack()
+		page_one = tk.Button(self, text="Βιβλία", command=lambda:controller.show_frame(Books))
+		page_one.pack()
+
+class MainMenu:
+	def __init__(self, master):
+		menubar = tk.Menu(master)
+		filemenu = tk.Menu(menubar, tearoff=0)
+		filemenu.add_command(label="Exit", command=master.quit)
+		menubar.add_cascade(label="File", menu=filemenu)
+		master.config(menu=menubar)
+
+
+app = MainWindow()
+app.mainloop()
+
+       
