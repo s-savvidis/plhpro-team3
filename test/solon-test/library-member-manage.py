@@ -31,6 +31,16 @@ class library_members():
         memberRows = cur.fetchall()
 
         return memberRows
+    
+    def search_email(self, memEmail):
+        '''Αναζήτηση μέλους βάση email'''
+        cur = self.conn.cursor()
+        sqlQry = ''' SELECT member_id FROM members WHERE email LIKE ? '''
+        cur.execute(sqlQry, ('%' + memEmail + '%',))
+        memberRows = cur.fetchall()
+
+        return memberRows
+
 
     def search_id(self, member_id):
         '''Αναζήτηση μέλους βάση κωδικού μέλους'''
@@ -57,14 +67,19 @@ class library_members():
                         )
             logging.info("Εισαγωγή νέου μέλους στη βάση. {}".format(memberDetails['full_name']))
             dbConn.commit()
-            return True
+            
+            memberId = self.search_email(memberDetails['email'])
+
+            return memberId
         except Exception as e:
-            loggin.error("Πρόβλημα εισαγωγής μέλους {} στη βάση. Πρόβλημα: {}".format(memberDetails['full_name'], e))
+            logging.error("Πρόβλημα εισαγωγής μέλους {} στη βάση. Πρόβλημα: {}".format(memberDetails['full_name'], e))
             return False
 
 #######################################
 if __name__ == '__main__':
     import argparse
+    
+    newMembr={}
     
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--database', help='SQLite3 DB filename', default="members_sqlite.db")
@@ -77,18 +92,39 @@ if __name__ == '__main__':
         sys.exit(1)
 
     libMembers = library_members(conn)
+    
+    
+    ###### Εισαγωγή μέλους
+    print()
+    print("Εισαγωγή νέου μέλους:###########")
+    newMembr['full_name'] = input("Όνομα μέλους: ")
+    newMembr['age'] = input("Ηλικία: ")
+    newMembr['occupation'] = input("Επάγγελμα: ")
+    newMembr['telephone_number'] = input("Τηλέφωνο: ")
+    newMembr['email'] = input("Email: ")
+    
+    insertResult = libMembers.insert_member(newMembr)
+    if not insertResult:
+        print("Αποτυχία εισαγωγής νέου μέλους.")
+        sys.exit(1)
+    else:
+        print("Κωδικός νέου μέλους {}".format(insertResult))
+    
 
-    printf("Αναζήτηση μέλους.")    
+    print("Αναζήτηση μέλους.")    
     memberName = input("Όνομα μέλους: ")
     
     memberSearch = libMembers.search_name(memberName)
-    for i in memberSearch:
-        print(i)
+    if memberSearch == []:
+        print("Tο μέλος δε βρέθηκε.")
+        sys.exit(0)
+    else:
+        for i in memberSearch:
+            print(i)
     
     memberID = input("Επιλέξτε κωδικό μέλους: ")
     memberSearch = libMembers.search_id(memberID)
     print("Πληροφορίες μέλους")
-    print(memberSearch)
-    
-    
+    print("Κωδικός μελους: {}".format(memberSearch[0][0]))
+
     sys.exit(0)
