@@ -5,6 +5,8 @@ import sqlite3
 from sqlite3 import Error
 import pandas as pd
 
+logging.basicConfig(level=logging.DEBUG)
+
 def create_connection(db_file):
     """ create a database connection to a SQLite database """
     try:
@@ -32,7 +34,9 @@ def create_sql_table(conn):
                                     title     TEXT,
                                     category  TEXT,
                                     author    TEXT,
-                                    isbn      INT NOT NULL UNIQUE
+                                    isbn      INT NOT NULL UNIQUE,
+                                    total_stock INT NOT NULL,
+                                    current_stock INT NOT NULL
                                 );
                                 """
 
@@ -42,6 +46,7 @@ def create_sql_table(conn):
                                     book_id   INTEGER NOT NULL,
                                     member_id INTEGER NOT NULL,
                                     date      TEXT NOT NULL,
+                                    return_status INTEGER,
                                     FOREIGN KEY(member_id) REFERENCES members(member_id),
                                     FOREIGN KEY(book_id) REFERENCES books(book_id)
                                 );
@@ -89,10 +94,10 @@ def insert_books_rec(conn, booksDict):
     '''
     Insert Books into DB.
     '''
-    sql = ''' INSERT INTO books (title, category, author, isbn) VALUES (?,?,?,?) '''
+    sql = ''' INSERT INTO books (title, category, author, isbn, total_stock, current_stock) VALUES (?,?,?,?,?,?) '''
     cur = conn.cursor()
     for i in booksDict:
-        cur.execute(sql, (i['book_title'],i['book_category'],i['book_author'],i['book_isbn']))
+        cur.execute(sql, (i['book_title'],i['book_category'],i['book_author'],i['book_isbn'],i['total_stock'],i['current_stock']))
     conn.commit()
 
 def csv_to_dict(csv_file):
@@ -159,6 +164,8 @@ if __name__ == '__main__':
 
     conn=create_connection("./members_sqlite.db")
     
+    
+    '''
     libMembers = library_members()
     
     memberName = input("Όνομα μέλους: ")
@@ -171,7 +178,7 @@ if __name__ == '__main__':
     memberSearch = libMembers.search_id(conn, memberID)
     print(memberSearch)
     sys.exit(0)
-    
+    '''
     
     create_sql_table(conn)
     
@@ -184,9 +191,9 @@ if __name__ == '__main__':
     #    print(i['full_name'],i['age'],i['occupation'],i['telephone_number'],i['email'])
     
     print("Inserting members.")
-    #insert_members_rec(conn, membersDict)
+    insert_members_rec(conn, membersDict)
     
     print("Inserting Books.")
-    #insert_books_rec(conn, booksDict)
+    insert_books_rec(conn, booksDict)
 
     sql_select_count_rec(conn)
