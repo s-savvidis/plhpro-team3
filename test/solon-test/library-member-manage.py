@@ -82,7 +82,7 @@ if __name__ == '__main__':
     newMembr={}
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--database', help='SQLite3 DB filename', default="members_sqlite.db")
+    parser.add_argument('-d', '--database', help='SQLite3 DB filename', default="../../../members_sqlite.db")
     args = parser.parse_args()
 
     try:
