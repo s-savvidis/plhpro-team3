@@ -74,6 +74,40 @@ class library_members():
         except Exception as e:
             logging.error("Πρόβλημα εισαγωγής μέλους {} στη βάση. Πρόβλημα: {}".format(memberDetails['full_name'], e))
             return False
+    def update_member(self, memberDetails):
+        '''Επικαιροποίηση στοιχείων μέλους'''
+        sql = ''' UPDATE members SET (name, age, occupation, tel, email) VALUES (?,?,?,?,?) WHERE member_id=? '''
+        cur = self.conn.cursor()
+        dbConn = self.conn
+        try:
+            cur.execute(sql, (memberDetails['full_name'],
+                              memberDetails['age'],
+                              memberDetails['occupation'],
+                              memberDetails['telephone_number'],
+                              memberDetails['email'],
+                              memberDetails['member_id']
+                              )
+                        )
+            logging.info("Επικαιροποίηση στοιχείων μέλους με κωδικό {} και όνομα {}".format(memberDetails['member_id'],memberDetails['full_name']))
+            dbConn.commit()
+            return True
+        except Exception as e:
+            logging.error("Πρόβλημα επικεροποίησης στοιχείων μέλους {} στη βάση. Πρόβλημα: {}".format(memberDetails['full_name'], e))
+            return False
+    
+    def delete_member(self, memberId):
+        '''Διαγραφή μέλους βάση memberId'''
+        dbConn = self.conn
+        sqlQry = ''' DELETE FROM members WHERE member_id=? '''
+        try:
+            cur = self.conn.cursor()
+            sqlQry = ''' DELETE FROM members WHERE member_id=? '''
+            cur.execute(sqlQry, (memberId,))
+            dbConn.commit()
+            return True
+        except Exception as e:
+            loggin.error("Αποτυχία διαγραφής μέλους με κωδικό {}. Λάθος: {}".format(memberId, e))
+            return False
 
 #######################################
 if __name__ == '__main__':
