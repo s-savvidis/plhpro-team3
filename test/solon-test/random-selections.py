@@ -39,18 +39,49 @@ def random_books(conn, categoryName):
     cur.execute(sqlQry, (categoryName,))
     bookRows = cur.fetchall()
     return bookRows
-'''
-def random_orders(conn, memberList, bookIdList, bookPref):
+
+def random_borrowings(bookIdList, maxBorrowings):
+    ''' Δημιουργία λίστας τυχαία επιλογής βιβλίων απο κατηγορία '''
+    rndBookId = 0
     borrowList=[]
-    
-    for i in range(0, len(bookPref)):
-        
-    memberBorrow={}
-    
-    for i in 
-    pass
-'''
+    for i in range(0, maxBorrowings):
+        while True:
+            rndNum = randrange(len(bookIdList))
+            if not bookIdList[rndNum] in borrowList:
+                borrowList.append(bookIdList[rndNum])
+                break
+    return borrowList
+
 #######################################
+'''
+
+memberList : Τυχαία λίστα με member_id μελών.
+bookPref   : Πίνακας με κατηγορίες βιβλίων που θα προτιμήσει κάθε μέλος απο τη memberList.
+             Με αυτό τον τρόπο μπορούμε να δημιουργήσουμε ένα Bias για συγκεκριμένες κατηγορίες βιβλίων.
+bookIds    : Θα έχει όλα τα book_id για κάθε κατηγορία. 
+             Θα βοηθήσει στο να διαλέξουμε τυχαία βιβλία απο την προκαθορισμένη κατηγορία , για κάθε μέλος.
+bookIdList : Πίνακας 2 διαστάσεων. Θέση 0 θα έχει το όνομα κάθε κατηγορίας. Θέση 1 θα έχει nested tupple απο  book_id (βλ. bookIds).
+             bookIdList[0]: ['Βίπερ', 'Κόμικ', Επική ποίηση' ...]
+             bookIdList[1]: [(1,2,3), (5,6), (7,8,9,10,11)]
+             Με αυτό τον τρόπο βρίσκουμε τη θέση των βιβλίων που χρειαζόμαστε αναζητοντας το index της θέσης 0 βάση ονόματος.
+             π.χ.
+             bookIdList[0].index('Κόμικ') = 1
+             άρα η λίστα με τα book_ids που είναι διαθέσημα για αυτή την κατηγορία είναι:
+             bookIdList[1][1] = (5,6)
+             Έτσι μπορούμε να πάρουμε ένα τυχαίο βιβλίο με random μεταξύ 0 και 1. 0=bookId5 1=bookId=6
+
+memberBorrow = {} : Μέλη μα κάθε κατηγορία βιβλίου και nested λίστα βιβλίων.
+
+memberBorrow = {'member_id': 0,
+                'book_lst: []
+                }
+
+                
+
+
+
+
+'''
 if __name__ == '__main__':
     conn = create_connection("../../../members_sqlite.db")
     
@@ -76,6 +107,10 @@ if __name__ == '__main__':
                   'Πληροφορική',
                   'Επιστημονική Φαντασία'
                   ]
+    memberBorrow={}
+    bookIdBorrow=[]
+    memberBookBorrow=[]
+    borrowingList=[]
     
     memberList = random_users(conn, 16)
     for i in (range(len(bookCategory))):
@@ -107,8 +142,50 @@ if __name__ == '__main__':
     bookPref.append(["Μυθιστόρημα","Βίπερ","Αγγλική Λογοτεχνία"])
     bookPref.append(["Μυθιστόρημα","Ιστορικό","Βίπερ"])
     
+    
+    # Εμφάνιση Α/Α , κατ. βιβλίου και πλήθος βιβλίων.
     for i in range(0, len(bookPref)):
         print("************ {}".format(i))
         for j in range(0, len(bookPref[i])):
             bookIndex = bookIdList[0].index(bookPref[i][j])
+            print("Κατηγορία: {} - Αριθμός βιβλίων: {}".format(
+                bookCategory[bookIndex],
+                len(bookIdList[1][bookIndex])
+            ))
             print(bookIdList[1][bookIndex])
+    
+    # Δημιουργία τυχαίων δανεισμών.
+    for i in range(0, len(memberList)):
+        # Βρόγχος για διαπέραση λίστας μελών.
+        
+        print("Μέλος {}".format(memberList[i]))
+        
+        # Διαπέραση προτίμησης κατηγορίας κάθε μέλους.
+        for bookCat in bookPref[i]:
+            
+            catIndex = bookIdList[0].index(bookCat) # categoryIndex απο το όνομα της προτίμησης.
+            bookNum = len(bookIdList[1][catIndex])
+            rndBorrowings = randrange(bookNum)      # Πόσα βιβλία θα διαλέξει το μέλος απο τη συγκεκριμένη κατηγορία.
+            
+            catBorrowing = random_borrowings(bookIdList[1][catIndex], rndBorrowings)
+            for bookIdBorrow in catBorrowing:
+                memberBookBorrow.append(bookIdBorrow)
+                
+        
+        memberBorrow = {'member_id': memberList[i],
+                     'book_list': memberBookBorrow
+                     }
+        borrowingList.append(memberBorrow) # Αποθήκευση προτιμήσεων μέλους
+        memberBookBorrow=[]                # Καθαρισμός πίνακα πριν την επανάληψη
+    
+    
+    for i in borrowingList:
+        print(i)
+        
+        
+        
+        
+                
+                
+            
+            
