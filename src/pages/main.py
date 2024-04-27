@@ -1,6 +1,4 @@
 import tkinter as tk
-# import sys
-# sys.path.append('./src/pages')
 
 from HomePage import HomePage
 from BooksPage import Books
