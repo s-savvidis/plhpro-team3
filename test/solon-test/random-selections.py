@@ -201,9 +201,18 @@ if __name__ == '__main__':
         
         for i in range(0, len(memberBorrowings['book_list'])):
             # Εμφάνιση member_id, book_id, ημερομηνία, rating, επιστροφή
-            print("{}, {}, {}, 0, 3".format(memberBorrowings['member_id'],
+            bookRating=randrange(1,10)
+            if bookRating in range(1,2):
+                memberRating = 1  # Δεν μου άρεσε.
+            elif bookRating in range(3,8):
+                memberRating = 2  # Μου άρεσε.
+            else:
+                memberRating = 3  # Το λάτρεψα.
+                
+            print("{}, {}, {}, 0, {}".format(memberBorrowings['member_id'],
                                             *memberBorrowings['book_list'][i],
-                                            bookingDates[i].strftime('%Y-%m-%d')
+                                            bookingDates[i].strftime('%Y-%m-%d'),
+                                            memberRating
                                             )
                   )
             
