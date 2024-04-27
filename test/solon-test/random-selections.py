@@ -4,6 +4,7 @@ import logging
 from random import randrange
 import sqlite3
 from sqlite3 import Error
+from datetime import timedelta, datetime
 
 def create_connection(db_file):
     """ create a database connection to a SQLite database """
@@ -51,6 +52,15 @@ def random_borrowings(bookIdList, maxBorrowings):
                 borrowList.append(bookIdList[rndNum])
                 break
     return borrowList
+
+def borrow_random_dates(startDate, endDate, numOfBooks):
+    randomBookDates = []
+    date_range = endDate - startDate
+    for _ in range(numOfBooks):
+        rndDays = randrange(date_range.days)
+        rndDate = startDate + timedelta(days=rndDays)
+        randomBookDates.append(rndDate)
+    return randomBookDates
 
 #######################################
 '''
@@ -179,8 +189,27 @@ if __name__ == '__main__':
         memberBookBorrow=[]                # Καθαρισμός πίνακα πριν την επανάληψη
     
     
-    for i in borrowingList:
-        print(i)
+    bookingDates=[]
+    
+    bookingStartDate = datetime(2023, 1, 1)
+    bookingEndDate = datetime(2023, 12, 31)
+    
+    for memberBorrowings in borrowingList:
+        
+        # Φτιάξε τυχαίες ημερομηνίες.
+        bookingDates = borrow_random_dates(bookingStartDate, bookingEndDate, len(memberBorrowings['book_list']))
+        
+        for i in range(0, len(memberBorrowings['book_list'])):
+            # Εμφάνιση member_id, book_id, ημερομηνία, rating, επιστροφή
+            print("{}, {}, {}, 0, 3".format(memberBorrowings['member_id'],
+                                            *memberBorrowings['book_list'][i],
+                                            bookingDates[i].strftime('%Y-%m-%d')
+                                            )
+                  )
+            
+            
+            
+            
         
         
         
