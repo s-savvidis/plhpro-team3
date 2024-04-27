@@ -40,7 +40,7 @@ class HomePage(tk.Frame):
         # Users Button
 		rawUsersImage = tk.PhotoImage(file="./images/users.png")
 		resizedUsersImage = rawUsersImage.subsample(4, 4)  
-		usersButton = tk.Button(self, image=resizedUsersImage, command=lambda: controller.show_frame(Books))
+		usersButton = tk.Button(self, image=resizedUsersImage, command=lambda: controller.show_frame(Users))
 		usersButton.image = resizedUsersImage  
 		usersButton.pack(side="right", padx=100)
 
