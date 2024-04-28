@@ -27,11 +27,12 @@ class library_db_init():
         '''
         Insert Members into DB.
         '''
-        sql = ''' INSERT INTO members (name, age, occupation, tel, email) VALUES (?,?,?,?,?) '''
+        sql = ''' INSERT INTO members (name, age, occupation, tel, email, gender) VALUES (?,?,?,?,?,?) '''
         cur = self.conn.cursor()
         dbConn = self.conn
         for i in membersDict:
-            cur.execute(sql, (i['full_name'],i['age'],i['occupation'],i['telephone_number'],i['email']))
+            cur.execute(sql, (i['full_name'],i['age'],i['occupation'],i['telephone_number'],i['email'],i['gender']))
+            logging.info("Importing member {}".format(i['full_name']))
         dbConn.commit()
     
     def insert_books_rec(self, booksDict):
@@ -43,17 +44,37 @@ class library_db_init():
         cur = self.conn.cursor()
         for i in booksDict:
             cur.execute(sql, (i['book_title'],i['book_category'],i['book_author'],i['book_isbn'],i['total_stock'],i['current_stock']))
+            logging.info("Importing book {}".format(i['book_title']))
         dbConn.commit()    
+
+    def insert_borrowings_rec(self, borrowingsDict):
+        '''
+        Insert Borrowings into DB.
+        '''
+        dbConn = self.conn
+        sql = ''' INSERT INTO borrowings (book_id, member_id, date, return_status, rating) VALUES (?,?,?,?,?) '''
+        cur = self.conn.cursor()
+        for i in borrowingsDict:
+            cur.execute(sql, (i['book_id'],i['member_id'],i['borrow_date'],i['return_status'],i['rating']))
+            logging.info("Importing borrowing for date {}".format(i['borrow_date']))
+        dbConn.commit()    
+
 
     def import_members(self, csv_file):
         '''Import Members records into DB'''
-        membersDict = csv_to_dict(csv_file)
-        insert_members_rec(conn, membersDict)
+        membersDict = self.csv_to_dict(csv_file)
+        self.insert_members_rec(membersDict)
 
     def import_books(self, csv_file):
         '''Import Book records into DB'''
-        booksDict = csv_to_dict(csv_file)
-        insert_members_rec(conn, membersDict)
+        booksDict = self.csv_to_dict(csv_file)
+        self.insert_books_rec(booksDict)
+
+    def import_borrowings(self, csv_file):
+        '''Import Borrowing records into DB'''
+        borrowingsDict = self.csv_to_dict(csv_file)
+        self.insert_borrowings_rec(borrowingsDict)
+
     
     def create_db_tables(self):
         '''Create DB tables if they do not exist'''
@@ -63,7 +84,8 @@ class library_db_init():
                                         age       INTEGER,
                                         occupation TEXT,
                                         tel       TEXT,
-                                        email     TEXT UNIQUE
+                                        email     TEXT UNIQUE,
+                                        gender    TEXT
                                     );
                                     """
         sql_create_books_table = """CREATE TABLE IF NOT EXISTS books (
@@ -83,6 +105,7 @@ class library_db_init():
                                         member_id INTEGER NOT NULL,
                                         date      TEXT NOT NULL,
                                         return_status INTEGER,
+                                        rating    INTEGER,
                                         FOREIGN KEY(member_id) REFERENCES members(member_id),
                                         FOREIGN KEY(book_id) REFERENCES books(book_id)
                                     );
@@ -111,26 +134,41 @@ class library_db_init():
         
         return memberCount, bookCount
 
+def help_info():
+    print("Library DB Init module.")
+    print("Usage: ")
+    print("library-db-init.py: ")
+    print("  -d, --db : Library Database filename and path.")
+    print("  -m, --members : Αρχείο csv με στοιχεία μελών.")
+    print("  -b, --books  : Αρχείο csv με στοιχεία βιβλίων.")
+    print("  -o, --borrowings : Αρχείο CSV με στοιχεία δανεισμών.")
+    print("-*"*25)
+    print("Παράδειγμα:")
+    print("library-db-init.py -d=../../../members_sqlite.db -m=members.csv -b=books.csv -o=borrowings.csv")
+    print("library-db-init.py --db=../../../members_sqlite.db --members=members.csv --books=books.csv --borrowings=borrowings.csv")
+    
+
 #######################################
 if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--db', help='SQLite3 DB filename', required=True, default="members_sqlite.db")
-    parser.add_argument('-m', '--members', help='Members init CSV file')
-    parser.add_argument('-b', '--books', help='Books init CSV file')
+    parser.add_argument('-d', '--db', help='SQLite3 DB filename. e.g. -d ../../../members_sqlite.db', default="../../../members_sqlite.db")
+    parser.add_argument('-m', '--members', help='Members init CSV file. e.g. -m=members.csv')
+    parser.add_argument('-b', '--books', help='Books init CSV file. e.g. -b=books.csv')
+    parser.add_argument('-o', '--borrowings', help='Borrowings init CSV file. e.g. -o=borrowings.csv')
     args = parser.parse_args()
 
     try:
-        conn = sqlite3.connect(db_file)
+        conn = sqlite3.connect(args.db)
     except Exception as e:
-        logging.error("Error Establishing connection to db {}. Error: {}".format(db_file, e))
+        logging.error("Error Establishing connection to db {}. Error: {}".format(args.db, e))
         sys.exit(1)
     
     sqlDb = library_db_init(conn)
     logging.info("Initialising DB")
     
-    sqlDb.create_db_tables(args.db)
+    sqlDb.create_db_tables()
     
     logging.info("Importing Members")
     if args.members:
@@ -140,4 +178,7 @@ if __name__ == '__main__':
     if args.books:
         sqlDb.import_books(args.books)
 
+    logging.info("Importing Borrowings")
+    if args.borrowings:
+        sqlDb.import_borrowings(args.borrowings)
     
