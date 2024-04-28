@@ -17,3 +17,4 @@ scratch/*
 *.db
 *.bak
 *.test
+__pycache__
