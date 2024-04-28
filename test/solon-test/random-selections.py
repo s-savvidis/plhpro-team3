@@ -194,11 +194,13 @@ if __name__ == '__main__':
     bookingStartDate = datetime(2023, 1, 1)
     bookingEndDate = datetime(2023, 12, 31)
     
+    
+    print("member_id,book_id,borrow_date,return_status,rating")
     for memberBorrowings in borrowingList:
         
         # Φτιάξε τυχαίες ημερομηνίες.
         bookingDates = borrow_random_dates(bookingStartDate, bookingEndDate, len(memberBorrowings['book_list']))
-        
+
         for i in range(0, len(memberBorrowings['book_list'])):
             # Εμφάνιση member_id, book_id, ημερομηνία, rating, επιστροφή
             bookRating=randrange(1,10)
@@ -209,21 +211,9 @@ if __name__ == '__main__':
             else:
                 memberRating = 3  # Το λάτρεψα.
                 
-            print("{}, {}, {}, 0, {}".format(memberBorrowings['member_id'],
+            print("{},{},{},1,{}".format(memberBorrowings['member_id'],
                                             *memberBorrowings['book_list'][i],
                                             bookingDates[i].strftime('%Y-%m-%d'),
                                             memberRating
                                             )
                   )
-            
-            
-            
-            
-        
-        
-        
-        
-                
-                
-            
-            
