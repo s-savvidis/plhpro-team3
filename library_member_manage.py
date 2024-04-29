@@ -106,7 +106,7 @@ class library_members():
             dbConn.commit()
             return True
         except Exception as e:
-            loggin.error("Αποτυχία διαγραφής μέλους με κωδικό {}. Λάθος: {}".format(memberId, e))
+            logging.error("Αποτυχία διαγραφής μέλους με κωδικό {}. Λάθος: {}".format(memberId, e))
             return False
 
 #######################################

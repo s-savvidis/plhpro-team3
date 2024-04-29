@@ -47,7 +47,7 @@ class library_borrowings():
         cur = self.conn.cursor()
         
         try:
-            cur.execute('''SELECT borrowing_id FROM borrowings WHERE WHERE member_id = ? AND book_id = ? AND return_status = 0''', (member_id,book_id,))
+            cur.execute('''SELECT borrowing_id FROM borrowings WHERE member_id = ? AND book_id = ? AND return_status = 0''', (member_id,book_id,))
             borrowing_id = cur.fetchone()[0]
         except Exception as e:
             logging.error("Αποτυχία αναζήτησης Borrowing_ID απο member_id {} και book_id {}".format(member_id, book_id))
