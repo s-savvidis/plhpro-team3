@@ -1,10 +1,10 @@
 import tkinter as tk
 
-class Books(tk.Frame):
+from .HomePage import HomePage
+
+class BooksPage(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
-
-		from HomePage import HomePage
 
 		tk.Label(self, text="Τίτλος:").grid(row=0, column=0, sticky="e")
 		self.entry_field1 = tk.Entry(self)
@@ -24,10 +24,6 @@ class Books(tk.Frame):
 		home_button.grid(row=4, column=2, pady=10)
 
 
-
-
-
-
 		# field1_value = self.entry_field1.get()
 		# field2_value = self.entry_field2.get()
 		# field3_value = self.entry_field3.get()
@@ -38,8 +34,9 @@ class Books(tk.Frame):
 		# print("Field 4:", field4_value)
   
 	def open_popup(self):
-		popup = tk.Toplevel(self)
+		popup = tk.Toplevel(self, takefocus=True)
 		popup.title("Αναζήτηση")
+		popup.minsize(width=900, height=700)
 
 		tk.Label(popup, text="Τίτλος:").grid(row=0, column=0, padx=5, pady=5)
 		name_entry = tk.Entry(popup)
