@@ -40,6 +40,8 @@ class BooksPage(tk.Frame):
 
 		self.db = dtb("src/database/members_sqlite.db")
 
+		self.result_listbox.bind("<Double-Button-1>", self.on_double_click)
+
 		self.rowconfigure(5, weight=1)
 		self.columnconfigure(0, weight=1)
 		listbox_frame.rowconfigure(0, weight=1)
@@ -51,4 +53,11 @@ class BooksPage(tk.Frame):
 		for book in books:
 			self.result_listbox.insert(tk.END, f"  {book[1]} - {book[3]} - ISBN: {book[4]}") 
 		self.entry_field1.delete(0, tk.END) 
+	
+	def on_double_click(self, event):
+		selection = self.result_listbox.curselection()
+		if selection:
+			index = selection[0]
+			value = self.result_listbox.get(index)
+			print("ISBN:", value)
 
