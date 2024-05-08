@@ -64,6 +64,7 @@ class library_borrowings():
         # Ανανεώνουμε την βάση δεδομένων κατά την επιστροφή του βιβλίου
         try:
             cur.execute('''UPDATE borrowing SET return_status = 1, rating=? WHERE borrowing_id=?''', (borrowing_id,))
+            dbConn = self.conn
             dbConn.commit()
             logging.info("Επιτυχία επιστροφής βιβλίου κωδικό και κωδικό δανεισμού: {}".format(book_id, borrowing_id))
             return True
@@ -189,6 +190,7 @@ if __name__ == '__main__':
 
     try:
         conn = sqlite3.connect(args.database)
+        manager = library_borrowings(conn)
     except Exception as e:
         logging.error("Error Establishing connection to db {}. Error: {}".format(args.database, e))
         sys.exit(1)        
