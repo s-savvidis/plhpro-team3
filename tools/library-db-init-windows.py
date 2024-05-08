@@ -151,8 +151,8 @@ def help_info():
     print("  -o, --borrowings : Αρχείο CSV με στοιχεία δανεισμών.")
     print("-*"*25)
     print("Παράδειγμα:")
-    print("library-db-init.py -d=../../../members_sqlite.db -m=members.csv -b=books.csv -o=borrowings.csv")
-    print("library-db-init.py --db=../../../members_sqlite.db --members=members.csv --books=books.csv --borrowings=borrowings.csv")
+    print("library-db-init.py -d=.\members_sqlite.db -m=.\tools\members.csv -b=.\tools\books.csv -o=.\tools\borrowings.csv")
+    print("library-db-init.py --db=.\members_sqlite.db --members=.\tools\members.csv --books=.\tools\books.csv --borrowings=.\toosl\borrowings.csv")
     
 
 #######################################
@@ -160,10 +160,10 @@ if __name__ == '__main__':
     import argparse
     
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--db', help='SQLite3 DB filename. e.g. -d members_sqlite.db', default="members_sqlite.db")
-    parser.add_argument('-m', '--members', help='Members init CSV file. e.g. -m=members.csv', default="members.csv")
-    parser.add_argument('-b', '--books', help='Books init CSV file. e.g. -b=books.csv', default="books.csv")
-    parser.add_argument('-o', '--borrowings', help='Borrowings init CSV file. e.g. -o=borrowings.csv', default="borrowins.csv")
+    parser.add_argument('-d', '--db', help='SQLite3 DB filename. e.g. -d members_sqlite.db', default="./members_sqlite.db")
+    parser.add_argument('-m', '--members', help='Members init CSV file. e.g. -m=members.csv', default="./tools/members.csv")
+    parser.add_argument('-b', '--books', help='Books init CSV file. e.g. -b=books.csv', default="./tools/books.csv")
+    parser.add_argument('-o', '--borrowings', help='Borrowings init CSV file. e.g. -o=borrowings.csv', default="./tools/borrowins.csv")
     args = parser.parse_args()
 
     try:
