@@ -141,16 +141,15 @@ class library_borrowings():
                     LIMIT 5''')
             suggestions = cur.fetchall()
         else:
-            #Αν έχει δανειστεί τουλάχιστον ένα βιβλία, βρίσκουμε τα βιβλία που του άρεσαν περισσότερο (μέχρι 10)
+            #Αν έχει δανειστεί τουλάχιστον ένα βιβλία, βρίσκουμε τα βιβλία που του άρεσαν περισσότερο (μέχρι 10 για να αποφύγουμε όσο γίνεται χαμηλότερες βαθμολογίες)
             cur.execute('''SELECT book_id FROM borrowings 
                         WHERE member_id = ? 
                         ORDER BY rating DESC 
                         LIMIT 10''', (member_id,))
             top_rated = cur.fetchall()
         
-        
         # Βρίσκουμε το καλύερο βιβλίο που δεν έχει δανειστεί, βάση της μέσης βαθμολογίας του, για κάθε ξεχωριστή κατηγορία βιβλίου που υπάρχει στο ιστορικό του.
-        if len(borrowing_history) > 0:
+        
             suggested_categories = []
             suggestions = []
             for book_id, in top_rated:
