@@ -129,10 +129,10 @@ class library_borrowings():
         cur.execute('''SELECT book_id FROM borrowings WHERE member_id = ?''', (member_id,))
         borrowing_history = cur.fetchall()
     
-        #Αν έχει δανειστεί μέχρι πέντε βιβλία τότε λόγο μη επαρκούς ιστορικού του προτείνουμε τα βιβλία με τις καλύτερες 
+        #Αν δεν έχει δανειστεί βιβλία τότε λόγο μη επαρκούς ιστορικού του προτείνουμε τα βιβλία με τις καλύτερες 
         # συνολικές κριτικές από πέντε διαφορετικές κατηγορίες
-        if len(borrowing_history) <= 5:
-            cur.execute('''SELECT books.book_id, books.title, AVG(borrowings.rating) 
+        if len(borrowing_history) == 0:
+            cur.execute('''SELECT books.book_id, books.title
                     FROM books 
                     LEFT JOIN borrowings ON books.book_id = borrowings.book_id 
                     WHERE books.category IN (SELECT DISTINCT category FROM books) 
@@ -141,44 +141,49 @@ class library_borrowings():
                     LIMIT 5''')
             suggestions = cur.fetchall()
         else:
-            # Βρίσκουμε τα πέντε βιβλία που του άρεσαν περισσότερο
+            #Αν έχει δανειστεί τουλάχιστον ένα βιβλία, βρίσκουμε τα βιβλία που του άρεσαν περισσότερο (μέχρι 10)
             cur.execute('''SELECT book_id FROM borrowings 
                         WHERE member_id = ? 
                         ORDER BY rating DESC 
-                        LIMIT 5''', (member_id,))
+                        LIMIT 10''', (member_id,))
             top_rated = cur.fetchall()
         
         
-        suggestions = []
+        # Βρίσκουμε το καλύερο βιβλίο που δεν έχει δανειστεί, βάση της μέσης βαθμολογίας του, για κάθε ξεχωριστή κατηγορία βιβλίου που υπάρχει στο ιστορικό του.
+        if len(borrowing_history) > 0:
+            suggested_categories = []
+            suggestions = []
+            for book_id, in top_rated:
+                cur.execute('''SELECT category FROM books WHERE book_id = ?''', (book_id,))
+                category = cur.fetchone()[0]
+                if category not in suggested_categories:
+                    suggested_categories.append(category)
+                    cur.execute('''SELECT books.book_id, books.title 
+                               FROM books 
+                               LEFT JOIN borrowings ON books.book_id = borrowings.book_id AND borrowings.member_id = ?
+                               WHERE books.category = ?
+                               AND borrowings.member_id IS NULL
+                               GROUP BY books.book_id, books.title 
+                               ORDER BY AVG(borrowings.rating) DESC
+                               LIMIT 1''', (member_id, category))
+                    suggested_book = cur.fetchone()
+                    if suggested_book:
+                        suggestions.append(suggested_book)
 
-        # Βρίσκουμε τις κατηγορίες στις οποίες ανήκουν τα αγαπημένα του βιβλία
-        top_categ = []
-        for book_id, in top_rated:
-            cur.execute('''SELECT category FROM books WHERE book_id = ?''', (book_id,))
-            category = cur.fetchone()[0]
-            if category not in top_categ:
-                top_categ.append(category)
-                if len(top_categ)>= 5:
-                    break
-
-        # Βρίσκουμε βιβλία τα οποία ο χρήστης δεν έχει δανειστεί 
-        for category in top_categ:
-            cur.execute('''SELECT book_id, title, AVG(borrowings.rating) 
-                   FROM books 
-                   LEFT JOIN borrowings ON books.book_id = borrowings.book_id AND borrowings.member_id = ?
-                   WHERE books.category LIKE ? AND borrowings.member_id IS NULL
-                   GROUP BY books.book_id, books.title 
-                   ORDER BY AVG(borrowings.rating) DESC''', (member_id, '%' + category + '%'))
-            top_in_cat = cur.fetchall()
-            for book_id, title in top_in_cat:
-                if book_id not in [book_id for book_id, in borrowing_history]:
-                    suggestions.append((book_id, title))
-                    if len(suggestions) >= 5:  
-                        break
-            if len(suggestions) >= 5:
-                break
-
-            return suggestions
+            # Αν υπάρχουν λιγότερες από 5 προτάσεις, συμπληρώνουμε με τα καλύτερα βάση βαθμολογίας χρηστών βιβλία, από άλλες κατηγορίες
+            while len(suggestions) < 5:
+                cur.execute('''SELECT books.book_id, books.title
+                           FROM books 
+                           LEFT JOIN borrowings ON books.book_id = borrowings.book_id 
+                           WHERE books.category NOT IN ({})
+                           GROUP BY books.book_id 
+                           ORDER BY AVG(borrowings.rating) DESC 
+                           LIMIT {}'''.format(','.join(['?']*len(suggested_categories)), (5 - len(suggestions))), list(suggested_categories))
+                remaining_suggestions = cur.fetchall()
+                suggestions.extend(remaining_suggestions)
+                
+    
+        return suggestions
         
 ######################################
 if __name__ == '__main__':
@@ -190,9 +195,8 @@ if __name__ == '__main__':
 
     try:
         conn = sqlite3.connect(args.database)
-        manager = library_borrowings(conn)
     except Exception as e:
         logging.error("Error Establishing connection to db {}. Error: {}".format(args.database, e))
-        sys.exit(1)        
+        sys.exit(1)       
 
 
