@@ -29,3 +29,9 @@ if __name__ == '__main__':
         sys.exit(1)
 
     libMembers = library_members(conn)
+    
+    #
+    libBorrowings = library_borrowings(conn)
+    
+    userRecomendations = libBorrowings.recommendations(93)
+    print(userRecomendations)

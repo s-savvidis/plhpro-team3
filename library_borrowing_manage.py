@@ -128,6 +128,7 @@ class library_borrowings():
         # Βρίσκουμε το ιστορικό δανεισμών του μέλους στο οποίο θέλουμε να προτείνουμε βιβλία
         cur.execute('''SELECT book_id FROM borrowings WHERE member_id = ?''', (member_id,))
         borrowing_history = cur.fetchall()
+        logging.info("Member borrowing hist size: {}".format(len(borrowing_history)))
     
         #Αν δεν έχει δανειστεί βιβλία τότε λόγο μη επαρκούς ιστορικού του προτείνουμε τα βιβλία με τις καλύτερες 
         # συνολικές κριτικές από πέντε διαφορετικές κατηγορίες
