@@ -63,7 +63,7 @@ class library_borrowings():
 
         # Ανανεώνουμε την βάση δεδομένων κατά την επιστροφή του βιβλίου
         try:
-            cur.execute('''UPDATE borrowing SET return_status = 1, rating=? WHERE borrowing_id=?''', (borrowing_id,))
+            cur.execute('''UPDATE borrowing SET return_status = 1, rating=? WHERE borrowing_id=?''', (book_rating, borrowing_id,))
             dbConn = self.conn
             dbConn.commit()
             logging.info("Επιτυχία επιστροφής βιβλίου κωδικό και κωδικό δανεισμού: {}".format(book_id, borrowing_id))
@@ -72,52 +72,108 @@ class library_borrowings():
             logging.error("Αποτυχία επιστροφής βιβλίου {} με κωδικό δανεισμού {}".format(book_id, borrowing_id))
             return False
     
-    def stats_books_member(self):
-        ''' Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο '''
+    def stats_books_member(self, start_date=None, end_date=None):
+        ''' Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο που επιλέγουμε (Έτος-Μήνας-Ημέρα)'''
         cur = self.conn.cursor()
-        cur.execute('''SELECT COUNT(members.member_id), members.member_id, members.name FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= "2023-01-01" AND borrowings.date <= "2023-01-31" GROUP BY members.member_id ORDER BY members.name;''')
+        cur.execute('''SELECT COUNT(members.member_id), members.member_id, members.name FROM borrowings 
+                    INNER JOIN members ON borrowings.member_id=members.member_id 
+                    INNER JOIN books ON borrowings.book_id=books.book_id 
+                    WHERE borrowings.date >= ? 
+                    AND borrowings.date <= ? 
+                    GROUP BY members.member_id ORDER BY members.name;''', (start_date, end_date))
         book_member_stats = cur.fetchall()
-        return book_member_stats
+        return book_member_stats 
 
-    def stats_borrowing_member(self):
-        ''' Κατανομή προτιμήσεων δανεισμού ανά μέλος '''
+    def stats_borrowing_member(self, member_id, start_date=None, end_date=None):
+        ''' Κατανομή προτιμήσεων δανεισμού ανά μέλος σε χρονική περίοδο που επιλέγουμε (Έτος-Μήνας-Ημέρα)'''
         cur = self.conn.cursor()
-        cur.execute('''SELECT members.member_id, members.name, COUNT(books.category), books.category FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= "2023-02-01" AND borrowings.date <= "2023-02-31" AND borrowings.member_id=23 GROUP BY books.category ;''')
+        cur.execute('''SELECT COUNT(books.category), books.category FROM borrowings 
+                    INNER JOIN members ON borrowings.member_id=members.member_id 
+                    INNER JOIN books ON borrowings.book_id=books.book_id 
+                    WHERE borrowings.date >= ? 
+                    AND borrowings.date <= ? 
+                    AND borrowings.member_id = ?
+                    GROUP BY books.category
+                    ORDER BY COUNT(books.category) DESC;''', (start_date, end_date, member_id))
         borrowing_member_stats = cur.fetchall()
         return borrowing_member_stats
 
-    def stats_pref_members(self):
-        ''' Κατανομή προτιμήσεων όλων των μελών ανά κατηγορία για χρονική περίοδο '''
+    def stats_pref_members(self, start_date=None, end_date=None):
+        ''' Κατανομή προτιμήσεων όλων των μελών ξεχωριστά ανά κατηγορία για χρονική περίοδο που επιλέγουμε (Έτος-Μήνας-Ημέρα)'''
         cur = self.conn.cursor()
-        cur.execute('''SELECT members.member_id, members.name, COUNT(books.category), books.category FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= "2023-02-01" AND borrowings.date <= "2023-02-31" GROUP BY members.name, books.category;''')
+        cur.execute('''SELECT members.member_id, members.name, COUNT(books.category), books.category FROM borrowings 
+                    INNER JOIN members ON borrowings.member_id=members.member_id 
+                    INNER JOIN books ON borrowings.book_id=books.book_id 
+                    WHERE borrowings.date >= ? 
+                    AND borrowings.date <= ? 
+                    GROUP BY members.name, books.category 
+                    ORDER BY members.member_id, COUNT(books.category) DESC;''', (start_date, end_date))
         pref_members_stats = cur.fetchall()
         return pref_members_stats
+    
+    def stats_pref(self, start_date=None, end_date=None):
+        ''' Κατανομή προτιμήσεων όλων των μελών συνολικά ανά κατηγορία για χρονική περίοδο που επιλέγουμε (Έτος-Μήνας-Ημέρα)'''
+        cur = self.conn.cursor()
+        cur.execute('''SELECT COUNT(books.category), books.category FROM borrowings 
+                    INNER JOIN members ON borrowings.member_id=members.member_id 
+                    INNER JOIN books ON borrowings.book_id=books.book_id 
+                    WHERE borrowings.date >= ? 
+                    AND borrowings.date <= ? 
+                    GROUP BY books.category 
+                    ORDER BY COUNT(books.category) DESC;''', (start_date, end_date))
+        pref_stats = cur.fetchall()
+        return pref_stats
 
-    def stats_member_history(self):
+
+    def stats_member_history(self, member_id):
         ''' Ιστορικό δανεισμού ανά μέλος '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT members.member_id, members.name, books.category, books.title, borrowings.date FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.member_id=9 ORDER BY borrowings.date;''')
+        cur.execute('''SELECT books.category, books.title, borrowings.date FROM borrowings 
+                    INNER JOIN members ON borrowings.member_id=members.member_id 
+                    INNER JOIN books ON borrowings.book_id=books.book_id 
+                    WHERE borrowings.member_id = ? 
+                    ORDER BY borrowings.date DESC;''', (member_id,))
         member_history_stats = cur.fetchall()
         return member_history_stats
 
     def stats_author(self):
         ''' Πλήθος δανεισμών ανά συγγραφέα '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT COUNT(books.author), books.author FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id GROUP BY books.author ORDER BY books.author;''')
+        cur.execute('''SELECT COUNT(books.author), books.author FROM borrowings 
+                    INNER JOIN members ON borrowings.member_id=members.member_id 
+                    INNER JOIN books ON borrowings.book_id=books.book_id 
+                    GROUP BY books.author 
+                    ORDER BY COUNT(books.author) DESC;''')
         author_stats = cur.fetchall()
         return author_stats
 
     def stats_age(self):
-        ''' Πλήθος δανεισμών ανά ηλικία '''
+        ''' Πλήθος δανεισμών ανά ηλικιακή ομάδα '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT members.age, COUNT(borrowings.borrow_id) FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id GROUP BY members.age ORDER BY members.age;''')
+        cur.execute('''SELECT CASE 
+        WHEN members.age BETWEEN 0 AND 20 THEN '0-20'
+        WHEN members.age BETWEEN 21 AND 30 THEN '21-30'
+        WHEN members.age BETWEEN 31 AND 40 THEN '31-40'
+        WHEN members.age BETWEEN 41 AND 50 THEN '41-50'
+        WHEN members.age BETWEEN 51 AND 60 THEN '51-60'
+        ELSE '60+'
+        END AS age_group,
+        COUNT(borrowings.borrow_id) FROM borrowings 
+        INNER JOIN members ON borrowings.member_id=members.member_id 
+        INNER JOIN books ON borrowings.book_id=books.book_id 
+        GROUP BY age_group
+        ORDER BY members.age;''')
         age_stats = cur.fetchall()
         return age_stats
-
+    
     def stats_gender(self):
         ''' Πλήθος δανεισμών ανά φύλο '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT members.gender, COUNT(borrowings.borrow_id) FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id GROUP BY members.gender ORDER BY members.gender;''')
+        cur.execute('''SELECT members.gender, COUNT(borrowings.borrow_id) FROM borrowings 
+                    INNER JOIN members ON borrowings.member_id=members.member_id 
+                    INNER JOIN books ON borrowings.book_id=books.book_id 
+                    GROUP BY members.gender 
+                    ORDER BY COUNT(borrowings.borrow_id) DESC;''')
         gender_stats = cur.fetchall()
         return gender_stats
     
@@ -141,15 +197,15 @@ class library_borrowings():
                     LIMIT 5''')
             suggestions = cur.fetchall()
         else:
-            #Αν έχει δανειστεί τουλάχιστον ένα βιβλία, βρίσκουμε τα βιβλία που του άρεσαν περισσότερο (μέχρι 10 για να αποφύγουμε όσο γίνεται χαμηλότερες βαθμολογίες)
+            #Αν έχει δανειστεί τουλάχιστον ένα βιβλία, βρίσκουμε τα βιβλία που του άρεσαν περισσότερο (μέχρι 10 για να αποφύγουμε χαμηλές βαθμολογίες)
             cur.execute('''SELECT book_id FROM borrowings 
                         WHERE member_id = ? 
                         ORDER BY rating DESC 
                         LIMIT 10''', (member_id,))
             top_rated = cur.fetchall()
         
-        # Βρίσκουμε το καλύερο βιβλίο που δεν έχει δανειστεί, βάση της μέσης βαθμολογίας του, για κάθε ξεχωριστή κατηγορία βιβλίου που υπάρχει στο ιστορικό του.
         
+        # Βρίσκουμε το καλύερο βιβλίο που δεν έχει δανειστεί, βάση της μέσης βαθμολογίας του, για κάθε ξεχωριστή κατηγορία βιβλίου που υπάρχει στο ιστορικό του.
             suggested_categories = []
             suggestions = []
             for book_id, in top_rated:
