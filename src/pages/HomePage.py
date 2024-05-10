@@ -13,9 +13,6 @@ class HomePage(tk.Frame):
 		from .BooksPage import BooksPage
 		from .UsersPage import UsersPage
 		
-		
-
-		
         # Books Button
 		books_image_path = os.path.join(images_dir, "books.png")
 		rawBooksImage = tk.PhotoImage(file=books_image_path)
