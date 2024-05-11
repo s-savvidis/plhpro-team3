@@ -5,7 +5,7 @@ import os
 class HomePage(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
-		header = tk.Label(self, text="Διαχείρισης Δανειστικής Βιβλιοθήκης", font=("Helvetica", 24))
+		header = tk.Label(self, text="Διαχείριση Δανειστικής Βιβλιοθήκης", font=("Helvetica", 24))
 		header.grid(row=0, column=0,padx=(150 ,20), columnspan=3, sticky="nsew", pady=(20, 50))
 
 		script_dir = os.path.dirname(os.path.abspath(__file__))
