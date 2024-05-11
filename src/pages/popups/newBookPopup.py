@@ -79,13 +79,11 @@ def newBookPopup(self):
 		and entry_field2.get()
 		and entry_field3.get()
 		and entry_field4.get()
-			):
+		):
 			dtb.insert_book(self.db, bookDetails)
 			showBooks(self, self.db, "")
 			self.bookIDLabel.configure(text=f"-")
 			popup.destroy()
-
-		
-		
-			else:
-				print("NO")
+		else:
+			#εκκρεμεί λαβελ.
+			print("NO")
