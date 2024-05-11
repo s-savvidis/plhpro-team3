@@ -50,7 +50,7 @@ class HomePage(tk.Frame):
 		booksLabel.grid(row=4, column=0,padx=(150, 50), sticky="nsew", pady=(5, 20))
 		
         # Κουμπί σελίδας στατιστικών
-		users_image_path = os.path.join(images_dir, "statictics.png")
+		users_image_path = os.path.join(images_dir, "statistics.png")
 		raw_users_image = tk.PhotoImage(file=users_image_path)
 		resizedUsersImage = raw_users_image.subsample(4, 4)  
 		usersButton = tk.Button(self, image=resizedUsersImage, command=lambda: controller.show_frame(StatisticsPage))
