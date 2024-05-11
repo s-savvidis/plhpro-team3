@@ -6,21 +6,9 @@ from src.functions.booksPageFunctions.booksPageFunctions import *
 def newBookPopup(self):
 		popup = tk.Toplevel()
 		popup.title("Εισαγωγή νέου βιβλίου")
-
-		# Get the width and height of the popup window
-		popup_width = popup.winfo_reqwidth()
-		popup_height = popup.winfo_reqheight()
-
-		# Get the width and height of the parent window
-		parent_x = self.winfo_rootx()  # Get the x-coordinate of the parent window
-		parent_y = self.winfo_rooty()  # Get the y-coordinate of the parent window
-		parent_width = self.winfo_width()  # Get the width of the parent window
-		parent_height = self.winfo_height()  # Get the height of the parent window
-		x = parent_x + (parent_width - popup_width) // 2
-		y = parent_y + (parent_height - popup_height) // 2
-
-		# Set the position of the popup window
-		popup.geometry(f"+{x}+{y}")
+		
+		XYPoints = centerizePopup(self, popup)
+		popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")
 
 		categoryOptions = [
 			"Βίπερ",
