@@ -1,5 +1,7 @@
 import tkinter as tk
 from src.database.db import Database as dtb
+from src.functions.booksPageFunctions.booksPageFunctions import *
+
 
 def newBookPopup(self):
 		popup = tk.Toplevel()
@@ -85,6 +87,6 @@ def newBookPopup(self):
                 'current_stock': entry_field6.get()
 			}
 			dtb.insert_book(self.db, bookDetails)
-			self.showBooks(self.db, "")
+			showBooks(self, self.db, "")
 			self.bookIDLabel.configure(text=f"-")
 			popup.destroy()

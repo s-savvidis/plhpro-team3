@@ -1,5 +1,6 @@
 import tkinter as tk
 from src.database.db import Database as dtb
+from src.functions.booksPageFunctions.booksPageFunctions import *
 
 def updateBookPopup(self, bookDetails):
 		popup = tk.Toplevel()
@@ -49,6 +50,6 @@ def updateBookPopup(self, bookDetails):
 				'book_id': self.selectedBook["book_id"]
 			}
 			dtb.update_book(self.db, bookDetails)
-			self.showBooks(self.db, "")
+			showBooks(self, self.db, "")
 			self.bookIDLabel.configure(text=f"-")
 			popup.destroy()

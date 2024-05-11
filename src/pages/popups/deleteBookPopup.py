@@ -1,4 +1,5 @@
 import tkinter as tk
+from src.functions.booksPageFunctions.booksPageFunctions import *
 
 def deleteBookPopup(self):
 		popup = tk.Toplevel()
@@ -27,7 +28,7 @@ def deleteBookPopup(self):
 		close_button.grid(row=1, column=1, pady=10, padx=20, sticky="e")
 
 		def deleteAndClose():
-			self.deleteBook(self.db, self.selectedBook["book_id"])
-			self.showBooks(self.db, "")
+			deleteBook(self, self.db, self.selectedBook["book_id"])
+			showBooks(self, self.db, "")
 			self.bookIDLabel.configure(text=f"-")
 			popup.destroy()

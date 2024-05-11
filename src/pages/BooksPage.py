@@ -1,6 +1,7 @@
 import tkinter as tk
 from src.database.db import Database as dtb
 from .HomePage import HomePage
+from src.functions.booksPageFunctions.booksPageFunctions import *
 from src.pages.popups.newBookPopup import newBookPopup
 from src.pages.popups.updateBookPopup import updateBookPopup
 from src.pages.popups.deleteBookPopup import deleteBookPopup
@@ -40,7 +41,7 @@ class BooksPage(tk.Frame):
 		self.bookIDLabel = tk.Label(self, text=f"-")
 		self.bookIDLabel.grid(row=4, column=1, sticky="ew", padx=(0,200))
 
-		search_button = tk.Button(self, text="Αναζήτηση", width=10, command=lambda: self.showBooks(self.db, self.entry_field1.get()))
+		search_button = tk.Button(self, text="Αναζήτηση", width=10, command=lambda: showBooks(self, self.db, self.entry_field1.get()))
 		search_button.grid(row=5, column=0, pady=10, padx=10,sticky="w")
 
 		self.add_button = tk.Button(self, text="Nέο βιβλίο", width=10, command=lambda: newBookPopup(self))
@@ -68,65 +69,9 @@ class BooksPage(tk.Frame):
 
 		self.db = dtb("src/database/members_sqlite.db")
 
-		self.result_listbox.bind("<Double-Button-1>", self.on_double_click)
+		self.result_listbox.bind("<Double-Button-1>", lambda event: on_double_click(self, event))
 
 		self.rowconfigure(6, weight=1)
 		self.columnconfigure(0, weight=1)
 		listbox_frame.rowconfigure(0, weight=1)
 		listbox_frame.columnconfigure(0, weight=1)
-
-	def deleteFilds(self):
-		self.entry_field1.delete(0, tk.END)
-		self.entry_field2.delete(0, tk.END) 
-		self.entry_field3.delete(0, tk.END) 
-		self.entry_field4.delete(0, tk.END)
-
-	def switchButtonState(self, value):
-		if (value == 0):
-			self.save_button['state'] = tk.DISABLED
-			self.delete_button['state'] = tk.DISABLED
-		elif (value == 1):
-			self.save_button['state'] = tk.NORMAL
-			self.delete_button['state'] = tk.NORMAL
-	
-	def showBooks(self, db, bookTitle):
-		self.deleteFilds()
-		books = dtb.search_title(db, bookTitle)
-		self.bookShownData = books
-		self.result_listbox.delete(0, tk.END) 
-		
-		for book in books:
-			self.result_listbox.insert(tk.END, f"  {book[1]} - {book[3]} - ISBN: {book[4]} | Total stock: {book[5]} Current stock: {book[6]}") 
-		self.switchButtonState(0)
-	
-	def deleteBook(self, db, bookId):
-		dtb.delete_book(db, bookId)
-
-	
-	def on_double_click(self, event):
-		selection = self.result_listbox.curselection()
-		if selection:
-			index = selection[0]
-			value = self.bookShownData[index]
-			self.deleteFilds()
-			self.entry_field1.insert(0, value[1])
-			self.entry_field2.insert(0, value[3])
-			self.entry_field3.insert(0, value[2])
-			self.entry_field4.insert(0, value[4])
-			self.bookID = value[0]
-			self.bookIDLabel.configure(text=f"{value[0]}")
-			self.switchButtonState(1)
-
-			self.selectedBook = {
-				'title': value[1],
-                'category': value[3],
-                'author': value[2],
-                'isbn': value[4],
-                'total_stock': value[5],
-                'current_stock': value[6],
-				'book_id': value[0]
-			}
-
-			
-
-
