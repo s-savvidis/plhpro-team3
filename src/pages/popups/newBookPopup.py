@@ -86,4 +86,6 @@ def newBookPopup(self):
 			popup.destroy()
 		else:
 			#εκκρεμεί λαβελ.
-			print("NO")
+			entry_field1.insert(0, "Απαραίτητο πεδίο")
+			entry_field2.insert(0, "Απαραίτητο πεδίο")
+			entry_field4.insert(0, "Απαραίτητο πεδίο")
