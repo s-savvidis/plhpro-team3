@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 #Εισαγωγή βιβλιοθηκών
 import tkinter as tk
 
@@ -10,7 +12,7 @@ from src.pages.UsersPage import UsersPage
 class MainWindow(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.title("Διαχείρισης Δανειστικής Βιβλιοθήκης") #Τίτλος παραθύρου
+        self.title("Διαχείριση Δανειστικής Βιβλιοθήκης") #Τίτλος παραθύρου
         self.geometry("1000x800") #Τίτλος παραθύρου
 
         container = tk.Frame(self)
