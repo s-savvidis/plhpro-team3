@@ -4,7 +4,7 @@ from src.database.db import Database as dtb
 def deleteFields(self):
     self.entry_field1.delete(0, tk.END)
     self.entry_field2.delete(0, tk.END) 
-    self.entry_field3.delete(0, tk.END) 
+    self.defaultCategory.set(self.categoryOptions["-"]) 
     self.entry_field4.delete(0, tk.END)
 
 def switchButtonState(self, value):
@@ -36,7 +36,7 @@ def on_double_click(self, event):
         deleteFields(self)
         self.entry_field1.insert(0, value[1])
         self.entry_field2.insert(0, value[3])
-        self.entry_field3.insert(0, value[2])
+        self.defaultCategory.set(self.categoryOptions[value[2]])
         self.entry_field4.insert(0, value[4])
         self.bookID = value[0]
         self.bookIDLabel.configure(text=f"{value[0]}")

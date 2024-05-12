@@ -21,6 +21,28 @@ class BooksPage(tk.Frame):
 				'book_id'
 		}
 
+		self.categoryOptions = {
+			"-":"-",
+			"Βίπερ":"Βίπερ",
+			"Κόμικ":"Κόμικ",
+			"Επική ποίηση":"Επική ποίηση",
+			"Άρλεκιν":"Άρλεκιν",
+			"Νουβέλα":"Νουβέλα",
+			"Σχολικά":"Σχολικά",
+			"Αγγλική Λογοτεχνία":"Αγγλική Λογοτεχνία",
+			"Ιστορικό":"Ιστορικό",
+			"Φαντασία":"Φαντασία",
+			"Ελληνική Λογοτεχνία":"Ελληνική Λογοτεχνία",
+			"Ιστορικό μυθιστόρημα":"Ιστορικό μυθιστόρημα",
+			"Κυβερνοπάνκ":"Κυβερνοπάνκ",
+			"Μυθιστόρημα":"Μυθιστόρημα",
+			"Πληροφορική":"Πληροφορική",
+			"Επιστημονική Φαντασία":"Επιστημονική Φαντασία",
+		}
+
+		self.defaultCategory = tk.StringVar()
+		self.defaultCategory.set(self.categoryOptions["-"])
+
 		tk.Label(self, text="Τίτλος:").grid(row=0, column=0, sticky="w", pady=(10,0), padx=10)  
 		self.entry_field1 = tk.Entry(self, width=60)
 		self.entry_field1.grid(row=0, column=1, sticky="ew", pady=(10,0), padx=(0,200))
@@ -30,7 +52,7 @@ class BooksPage(tk.Frame):
 		self.entry_field2.grid(row=1, column=1, sticky="ew", padx=(0,200))
 
 		tk.Label(self, text="Κατηγορία:").grid(row=2, column=0, sticky="w", padx=10)
-		self.entry_field3 = tk.Entry(self, width=60)
+		self.entry_field3 = tk.OptionMenu(self, self.defaultCategory, *self.categoryOptions)
 		self.entry_field3.grid(row=2, column=1, sticky="ew", padx=(0,200))
 
 		tk.Label(self, text="ISBN:").grid(row=3, column=0, sticky="w", padx=10)
@@ -39,7 +61,7 @@ class BooksPage(tk.Frame):
 
 		tk.Label(self, text=f"Book ID:").grid(row=4, column=0, sticky="w", padx=10)
 		self.bookIDLabel = tk.Label(self, text=f"-")
-		self.bookIDLabel.grid(row=4, column=1, sticky="ew", padx=(0,200))
+		self.bookIDLabel.grid(row=4, column=1, sticky="w", padx=(0,200))
 
 		search_button = tk.Button(self, text="Αναζήτηση", width=10, command=lambda: showBooks(self, self.db, self.entry_field1.get()))
 		search_button.grid(row=5, column=0, pady=10, padx=10,sticky="w")
@@ -52,7 +74,6 @@ class BooksPage(tk.Frame):
 
 		self.delete_button = tk.Button(self, text="Διαγραφή", state="disabled", width=10, command=lambda:deleteBookPopup(self))
 		self.delete_button.grid(row=2, column=2, padx=10, sticky="w")
-
 
 		home_button = tk.Button(self, text="Αρχική σελίδα", width=10, command=lambda:controller.show_frame(HomePage))
 		home_button.grid(row=7, column=0, columnspan=2, pady=10, padx=10, sticky="w")

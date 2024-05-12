@@ -30,7 +30,7 @@ def updateBookPopup(self, bookDetails):
 		def updateBook(tStock, cStock):
 			bookDetails = {
 				'title': self.entry_field1.get(),
-                'category': self.entry_field3.get(),
+                'category': self.defaultCategory.get(),
                 'author': self.entry_field2.get(),
                 'isbn': self.entry_field4.get(),
                 'total_stock': tStock,

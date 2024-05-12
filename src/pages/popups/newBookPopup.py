@@ -10,26 +10,8 @@ def newBookPopup(self):
 	XYPoints = centerizePopup(self, popup)
 	popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")
 
-	categoryOptions = [
-		"Βίπερ",
-		"Κόμικ",
-		"Επική ποίηση",
-		"Άρλεκιν",
-		"Νουβέλα",
-		"Σχολικά",
-		"Αγγλική Λογοτεχνία",
-		"Ιστορικό",
-		"Φαντασία",
-		"Ελληνική Λογοτεχνία",
-		"Ιστορικό μυθιστόρημα",
-		"Κυβερνοπάνκ",
-		"Μυθιστόρημα",
-		"Πληροφορική",
-		"Επιστημονική Φαντασία"
-	] 
-
 	defaultCategory = tk.StringVar()
-	defaultCategory.set(categoryOptions[0]) # default value
+	defaultCategory.set(self.categoryOptions["-"])
 
 	tk.Label(popup, text="Τίτλος*:").grid(row=0, column=0, sticky="w", pady=(20,0), padx=10)  
 	entry_field1 = tk.Entry(popup)
@@ -40,7 +22,7 @@ def newBookPopup(self):
 	entry_field2.grid(row=1, column=1, sticky="ew", padx=10)
 
 	tk.Label(popup, text="Κατηγορία:").grid(row=2, column=0, sticky="w", padx=10)
-	entry_field3 = tk.OptionMenu(popup, defaultCategory, *categoryOptions)
+	entry_field3 = tk.OptionMenu(popup, defaultCategory, *self.categoryOptions)
 	entry_field3.grid(row=2, column=1, sticky="ew", padx=10)
 
 	tk.Label(popup, text="ISBN*:").grid(row=3, column=0, sticky="w", padx=10)
