@@ -31,11 +31,11 @@ def newBookPopup(self):
 	defaultCategory = tk.StringVar()
 	defaultCategory.set(categoryOptions[0]) # default value
 
-	tk.Label(popup, text="Τίτλος:").grid(row=0, column=0, sticky="w", pady=(10,0), padx=10)  
+	tk.Label(popup, text="Τίτλος*:").grid(row=0, column=0, sticky="w", pady=(20,0), padx=10)  
 	entry_field1 = tk.Entry(popup)
-	entry_field1.grid(row=0, column=1, sticky="ew", pady=(10,0), padx=10)
+	entry_field1.grid(row=0, column=1, sticky="ew", pady=(20,0), padx=10)
 
-	tk.Label(popup, text="Συγγραφέας:").grid(row=1, column=0, sticky="w", padx=10)
+	tk.Label(popup, text="Συγγραφέας*:").grid(row=1, column=0, sticky="w", padx=10)
 	entry_field2 = tk.Entry(popup)
 	entry_field2.grid(row=1, column=1, sticky="ew", padx=10)
 
@@ -43,7 +43,7 @@ def newBookPopup(self):
 	entry_field3 = tk.OptionMenu(popup, defaultCategory, *categoryOptions)
 	entry_field3.grid(row=2, column=1, sticky="ew", padx=10)
 
-	tk.Label(popup, text="ISBN:").grid(row=3, column=0, sticky="w", padx=10)
+	tk.Label(popup, text="ISBN*:").grid(row=3, column=0, sticky="w", padx=10)
 	entry_field4 = tk.Entry(popup)
 	entry_field4.grid(row=3, column=1, sticky="ew", padx=10)
 
@@ -77,7 +77,6 @@ def newBookPopup(self):
 		if (
 		entry_field1.get()
 		and entry_field2.get()
-		and entry_field3.get()
 		and entry_field4.get()
 		):
 			dtb.insert_book(self.db, bookDetails)
@@ -85,7 +84,6 @@ def newBookPopup(self):
 			self.bookIDLabel.configure(text=f"-")
 			popup.destroy()
 		else:
-			#εκκρεμεί λαβελ.
-			entry_field1.insert(0, "Απαραίτητο πεδίο")
-			entry_field2.insert(0, "Απαραίτητο πεδίο")
-			entry_field4.insert(0, "Απαραίτητο πεδίο")
+			error_label = tk.Label(popup, text="Συμπληρώστε όλα τα απαραίτητα πεδία με *", fg="red")
+			error_label.place(x=40, y=1)
+
