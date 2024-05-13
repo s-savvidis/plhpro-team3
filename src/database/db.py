@@ -171,8 +171,8 @@ class Database:
                               memberDetails['occupation'],
                               memberDetails['telephone_number'],
                               memberDetails['email'],
-                              memberDetails['member_id'],
-                              memberDetails['gender']
+                              memberDetails['gender'],
+                              memberDetails['member_id']
                               )
                         )
             logging.info("Επικαιροποίηση στοιχείων μέλους με κωδικό {} και όνομα {}".format(memberDetails['member_id'],memberDetails['full_name']))
