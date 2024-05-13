@@ -38,8 +38,9 @@ def on_double_click(self, event):
         self.entry_field2.insert(0, value[2])
         self.entry_field3.insert(0, value[3])
         self.entry_field4.insert(0, value[4])
-        self.bookID = value[0]
-        self.bookIDLabel.configure(text=f"{value[0]}")
+        self.entry_field5.insert(0, value[5])
+        self.memberID = value[0]
+        self.memberIDLabel.configure(text=f"{value[0]}")
         switchButtonState(self, 1)
 
         self.selectedMember = {

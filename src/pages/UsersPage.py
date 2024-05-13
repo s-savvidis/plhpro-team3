@@ -37,12 +37,17 @@ class UsersPage(tk.Frame):
 		self.entry_field4 = tk.Entry(self, width=60)
 		self.entry_field4.grid(row=3, column=1, sticky="ew", padx=(0,200))
 
-		tk.Label(self, text=f"Member ID:").grid(row=4, column=0, sticky="w", padx=10)
-		self.bookIDLabel = tk.Label(self, text=f"-")
-		self.bookIDLabel.grid(row=4, column=1, sticky="ew", padx=(0,200))
+		tk.Label(self, text=f"email:").grid(row=4, column=0, sticky="w", padx=10)
+		self.entry_field5 = tk.Entry(self, width=60)
+		self.entry_field5.grid(row=4, column=1, sticky="ew", padx=(0,200))
+
+		tk.Label(self, text=f"Member ID:").grid(row=5, column=0, sticky="w", padx=10)
+		self.memberIDLabel = tk.Label(self, text=f"-")
+		self.memberIDLabel.grid(row=5, column=1, sticky="ew", padx=(0,200))
+  
 
 		search_button = tk.Button(self, text="Αναζήτηση", width=10, command=lambda: showMembers(self, self.db, self.entry_field1.get()))
-		search_button.grid(row=5, column=0, pady=10, padx=10,sticky="w")
+		search_button.grid(row=6, column=0, pady=10, padx=10,sticky="w")
 
 		self.add_button = tk.Button(self, text="Nέο μέλος", width=10, command=lambda: newMemberPopup(self))
 		self.add_button.grid(row=0, column=2, pady=(10,0), padx=10, sticky="ew")
@@ -55,10 +60,10 @@ class UsersPage(tk.Frame):
 
 
 		home_button = tk.Button(self, text="Αρχική σελίδα", width=10, command=lambda:controller.show_frame(HomePage))
-		home_button.grid(row=7, column=0, columnspan=2, pady=10, padx=10, sticky="w")
+		home_button.grid(row=8, column=0, columnspan=2, pady=10, padx=10, sticky="w")
 
 		listbox_frame = tk.Frame(self)
-		listbox_frame.grid(row=6, column=0, padx=10, pady=10, columnspan=3, sticky="nsew")
+		listbox_frame.grid(row=7, column=0, padx=10, pady=10, columnspan=3, sticky="nsew")
 
 		self.result_listbox = tk.Listbox(listbox_frame)
 		self.result_listbox.grid(row=0, column=0, sticky="nsew")
@@ -71,7 +76,7 @@ class UsersPage(tk.Frame):
 
 		self.result_listbox.bind("<Double-Button-1>", lambda event: on_double_click(self, event))
 
-		self.rowconfigure(6, weight=1)
+		self.rowconfigure(7, weight=1)
 		self.columnconfigure(0, weight=1)
 		listbox_frame.rowconfigure(0, weight=1)
 		listbox_frame.columnconfigure(0, weight=1)
