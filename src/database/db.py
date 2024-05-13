@@ -107,6 +107,94 @@ class Database:
         except Exception as e:
             logging.error("Αποτυχία διαγραφής βιβλίου με κωδικό {}. Λάθος: {}".format(bookId, e))
             return False
+    
+    def search_name(self, memberName):
+        '''Αναζήτηση μέλους με τμήμα του ονόματος'''
+        cur = self.conn.cursor()
+        sqlQry = ''' SELECT * FROM members WHERE name LIKE ? '''
+        cur.execute(sqlQry, ('%' + memberName + '%',))
+        memberRows = cur.fetchall()
+
+        return memberRows
+    
+    def search_email(self, memEmail):
+        '''Αναζήτηση μέλους βάση email'''
+        cur = self.conn.cursor()
+        sqlQry = ''' SELECT member_id FROM members WHERE email LIKE ? '''
+        cur.execute(sqlQry, ('%' + memEmail + '%',))
+        memberRows = cur.fetchall()
+
+        return memberRows
+
+
+    def search_id(self, member_id):
+        '''Αναζήτηση μέλους βάση κωδικού μέλους'''
+        cur = self.conn.cursor()
+        sqlQry = ''' SELECT * FROM members WHERE member_id=? '''
+        cur.execute(sqlQry, (member_id,))
+        memberRows = cur.fetchall()
+
+        return memberRows
+
+    def insert_member(self, memberDetails):
+        '''Εισαγωγή μέλους στη βάση'''
+
+        sql = ''' INSERT INTO members (name, age, occupation, tel, email, gender) VALUES (?,?,?,?,?,?) '''
+        cur = self.conn.cursor()
+        dbConn = self.conn
+        try:
+            cur.execute(sql, (memberDetails['full_name'],
+                              memberDetails['age'],
+                              memberDetails['occupation'],
+                              memberDetails['telephone_number'],
+                              memberDetails['email'],
+                              memberDetails['gender']
+                              )
+                        )
+            logging.info("Εισαγωγή νέου μέλους στη βάση. {}".format(memberDetails['full_name']))
+            dbConn.commit()
+            
+            memberId = self.search_email(memberDetails['email'])
+
+            return memberId
+        except Exception as e:
+            logging.error("Πρόβλημα εισαγωγής μέλους {} στη βάση. Πρόβλημα: {}".format(memberDetails['full_name'], e))
+            return False
+    def update_member(self, memberDetails):
+        '''Επικαιροποίηση στοιχείων μέλους'''
+        sql = ''' UPDATE members SET (name, age, occupation, tel, email, gender) VALUES (?,?,?,?,?,?) WHERE member_id=? '''
+        cur = self.conn.cursor()
+        dbConn = self.conn
+        try:
+            cur.execute(sql, (memberDetails['full_name'],
+                              memberDetails['age'],
+                              memberDetails['occupation'],
+                              memberDetails['telephone_number'],
+                              memberDetails['email'],
+                              memberDetails['member_id'],
+                              memberDetails['gender']
+                              )
+                        )
+            logging.info("Επικαιροποίηση στοιχείων μέλους με κωδικό {} και όνομα {}".format(memberDetails['member_id'],memberDetails['full_name']))
+            dbConn.commit()
+            return True
+        except Exception as e:
+            logging.error("Πρόβλημα επικεροποίησης στοιχείων μέλους {} στη βάση. Πρόβλημα: {}".format(memberDetails['full_name'], e))
+            return False
+    
+    def delete_member(self, memberId):
+        '''Διαγραφή μέλους βάση memberId'''
+        dbConn = self.conn
+        sqlQry = ''' DELETE FROM members WHERE member_id=? '''
+        try:
+            cur = self.conn.cursor()
+            sqlQry = ''' DELETE FROM members WHERE member_id=? '''
+            cur.execute(sqlQry, (memberId,))
+            dbConn.commit()
+            return True
+        except Exception as e:
+            logging.error("Αποτυχία διαγραφής μέλους με κωδικό {}. Λάθος: {}".format(memberId, e))
+            return False
         
     def close_connection(self):
         self.conn.close()
