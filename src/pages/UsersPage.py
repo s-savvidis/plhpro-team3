@@ -6,7 +6,7 @@ from src.pages.popups.newMemberPopup import newMemberPopup
 from src.pages.popups.updateMemberPopup import updateMemberPopup
 from src.pages.popups.deleteMemberPopup import deleteMemberPopup
 
-class BooksPage(tk.Frame):
+class UsersPage(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
 
