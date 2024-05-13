@@ -43,7 +43,7 @@ class UsersPage(tk.Frame):
 
 		tk.Label(self, text=f"Member ID:").grid(row=5, column=0, sticky="w", padx=10)
 		self.memberIDLabel = tk.Label(self, text=f"-")
-		self.memberIDLabel.grid(row=5, column=1, sticky="ew", padx=(0,200))
+		self.memberIDLabel.grid(row=5, column=1, sticky="w", padx=(0,200))
   
 
 		search_button = tk.Button(self, text="Αναζήτηση", width=10, command=lambda: showMembers(self, self.db, self.entry_field1.get()))

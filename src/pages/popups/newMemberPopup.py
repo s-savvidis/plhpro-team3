@@ -53,23 +53,25 @@ def newMemberPopup(self):
 
 	def addMember():
 		memberDetails = {
-			'name': entry_field1.get(),
+			'full_name': entry_field1.get(),
 			'age': entry_field2.get(),
 			'occupation': entry_field3.get(),
-			'tel': entry_field4.get(),
+			'telephone_number': entry_field4.get(),
 			'email': entry_field5.get(),
 			'gender': defaultGender.get()
 		}
 		if (
 		entry_field1.get()
-		and entry_field2.get()
+		and age.get()
 		and entry_field3.get()
 		and entry_field4.get()
+  		and entry_field5.get()
+		and defaultGender.get()
 		):
 			dtb.insert_member(self.db, memberDetails)
 			showMembers(self, self.db, "")
 			self.memberIDLabel.configure(text=f"-")
 			popup.destroy()
 		else:
-			error_label = tk.Label(popup, text="Συμπληρώστε όλα τα απαραίτητα πεδία με *", fg="red")
+			error_label = tk.Label(popup, text="Πρέπει να συμπληρώσετε όλα τα πεδία", fg="red")
 			error_label.place(x=40, y=1)

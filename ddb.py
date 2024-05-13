@@ -13,7 +13,7 @@ class MainWindow(tk.Tk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.title("Διαχείριση Δανειστικής Βιβλιοθήκης") #Τίτλος παραθύρου
-        self.geometry("1000x800") #Τίτλος παραθύρου
+        self.geometry("1030x800") #Τίτλος παραθύρου
 
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)

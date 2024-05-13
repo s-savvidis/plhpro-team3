@@ -6,6 +6,7 @@ def deleteFields(self):
     self.entry_field2.delete(0, tk.END) 
     self.entry_field3.delete(0, tk.END) 
     self.entry_field4.delete(0, tk.END)
+    self.entry_field5.delete(0, tk.END)
 
 def switchButtonState(self, value):
     if (value == 0):

@@ -27,7 +27,7 @@ class HomePage(tk.Frame):
 		booksLabel = tk.Label(self, text="Διαχείριση βιβλίων", font=("Helvetica", 16))
 		booksLabel.grid(row=2, column=0,padx=(150,50), sticky="nsew", pady=(5, 20))
 		
-        # Κουμπί σελίδας χρηστών
+        # Κουμπί σελίδας μελών
 		users_image_path = os.path.join(images_dir, "users.png")
 		raw_users_image = tk.PhotoImage(file=users_image_path)
 		resizedUsersImage = raw_users_image.subsample(4, 4)  
@@ -35,7 +35,7 @@ class HomePage(tk.Frame):
 		usersButton.image = resizedUsersImage  
 		usersButton.grid(row=1, column=1, padx=(50, 100))
 
-		booksLabel = tk.Label(self, text="Διαχείριση χρηστών", font=("Helvetica", 16))
+		booksLabel = tk.Label(self, text="Διαχείριση μελών", font=("Helvetica", 16))
 		booksLabel.grid(row=2, column=1,padx=(50, 100), sticky="nsew", pady=(5, 20))
 
         # Κουμπί σελίδας δανεισμών

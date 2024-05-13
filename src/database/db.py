@@ -162,7 +162,7 @@ class Database:
             return False
     def update_member(self, memberDetails):
         '''Επικαιροποίηση στοιχείων μέλους'''
-        sql = ''' UPDATE members SET (name, age, occupation, tel, email, gender) VALUES (?,?,?,?,?,?) WHERE member_id=? '''
+        sql = '''UPDATE members SET name=?, age=?, occupation=?, tel=?, email=?, gender=? WHERE member_id=?'''
         cur = self.conn.cursor()
         dbConn = self.conn
         try:
