@@ -1,5 +1,5 @@
 import tkinter as tk
-from src.functions.membersPageFunctions import *
+from src.functions.membersPageFunctions.membersPageFunctions import *
 
 def deleteMemberPopup(self):
 		popup = tk.Toplevel()

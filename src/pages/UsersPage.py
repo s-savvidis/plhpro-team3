@@ -1,7 +1,7 @@
 import tkinter as tk
 from src.database.db import Database as dtb
 from .HomePage import HomePage
-from src.functions.membersPageFunctions import *
+from src.functions.membersPageFunctions.membersPageFunctions import *
 from src.pages.popups.newMemberPopup import newMemberPopup
 from src.pages.popups.updateMemberPopup import updateMemberPopup
 from src.pages.popups.deleteMemberPopup import deleteMemberPopup

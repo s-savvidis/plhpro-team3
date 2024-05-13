@@ -1,6 +1,6 @@
 import tkinter as tk
 from src.database.db import Database as dtb
-from src.functions.membersPageFunctions import *
+from src.functions.membersPageFunctions.membersPageFunctions import *
 
 
 def newMemberPopup(self):
