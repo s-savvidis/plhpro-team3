@@ -23,7 +23,13 @@ def showMembers(self, db, memberName):
     self.result_listbox.delete(0, tk.END) 
     
     for member in members:
-        self.result_listbox.insert(tk.END, f"  {member[1]} - Ηλικία: {member[2]} - {member[3]} - {member[4]} - {member[5]} - Φύλο: {member[6]}") 
+        if member[6] == 'm':
+            gen = 'male'
+        elif member[6] == 'f':
+            gen = 'female'
+        else:
+            gen = 'other'
+        self.result_listbox.insert(tk.END, f"  {member[1]} - Ηλικία: {member[2]} - {member[3]} - {member[4]} - {member[5]} - {gen}")
     switchButtonState(self, 0)
 
 def deleteMember(self, db, memberId):

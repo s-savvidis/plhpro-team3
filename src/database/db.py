@@ -142,13 +142,21 @@ class Database:
         sql = ''' INSERT INTO members (name, age, occupation, tel, email, gender) VALUES (?,?,?,?,?,?) '''
         cur = self.conn.cursor()
         dbConn = self.conn
+        
+        if memberDetails['gender'] == 'male':
+            gen = 'm'
+        elif memberDetails['gender'] == 'female':
+            gen = 'f'
+        else:
+            gen = 'o'    
+        
         try:
             cur.execute(sql, (memberDetails['full_name'],
                               memberDetails['age'],
                               memberDetails['occupation'],
                               memberDetails['telephone_number'],
                               memberDetails['email'],
-                              memberDetails['gender']
+                              gen
                               )
                         )
             logging.info("Εισαγωγή νέου μέλους στη βάση. {}".format(memberDetails['full_name']))
@@ -165,13 +173,21 @@ class Database:
         sql = '''UPDATE members SET name=?, age=?, occupation=?, tel=?, email=?, gender=? WHERE member_id=?'''
         cur = self.conn.cursor()
         dbConn = self.conn
+        
+        if memberDetails['gender'] == 'male':
+            gen = 'm'
+        elif memberDetails['gender'] == 'female':
+            gen = 'f'
+        else:
+            gen = 'o'    
+        
         try:
             cur.execute(sql, (memberDetails['full_name'],
                               memberDetails['age'],
                               memberDetails['occupation'],
                               memberDetails['telephone_number'],
                               memberDetails['email'],
-                              memberDetails['gender'],
+                              gen,
                               memberDetails['member_id']
                               )
                         )

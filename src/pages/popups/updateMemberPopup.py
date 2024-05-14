@@ -7,12 +7,18 @@ def updateMemberPopup(self, memberDetails):
 		popup.title("Ενημέρωση μέλους")
 
 		genderOptions = [
-		"f",
-		"m",
-		"o",
+		"female",
+		"male",
+		"other",
 		] 
 
-		defaultGender = tk.StringVar(value=memberDetails["gender"])
+		if memberDetails["gender"] == 'f':
+			gen = 'female'
+		elif memberDetails["gender"] == 'm':
+			gen = 'male'
+		else:
+			gen = 'other'
+		defaultGender = tk.StringVar(value=gen)
   
 		XYPoints = centerizePopup(self, popup)
 		popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")

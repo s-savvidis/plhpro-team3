@@ -11,9 +11,9 @@ def newMemberPopup(self):
 	popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")
 
 	genderOptions = [
-		"f",
-		"m",
-		"o",
+		"female",
+		"male",
+		"other",
 	] 
 
 	defaultGender = tk.StringVar()
