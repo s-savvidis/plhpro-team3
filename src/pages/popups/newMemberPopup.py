@@ -52,20 +52,28 @@ def newMemberPopup(self):
 	close_button.grid(row=6, column=1, pady=10, sticky="w")
 
 	def addMember():
+		
+		email = entry_field5.get()
+
 		memberDetails = {
 			'full_name': entry_field1.get(),
 			'age': entry_field2.get(),
 			'occupation': entry_field3.get(),
 			'telephone_number': entry_field4.get(),
-			'email': entry_field5.get(),
+			'email': email,
 			'gender': defaultGender.get()
 		}
-		if (
+  
+		if not check_email(email):
+			error_label = tk.Label(popup, text="Το email που εισάγατε δεν έχει σωστή μορφή", fg="red")
+			error_label.place(x=10, y=-6)
+			    
+		elif (
 		entry_field1.get()
 		and age.get()
 		and entry_field3.get()
 		and entry_field4.get()
-  		and entry_field5.get()
+  		and email
 		and defaultGender.get()
 		):
 			dtb.insert_member(self.db, memberDetails)
@@ -73,5 +81,5 @@ def newMemberPopup(self):
 			self.memberIDLabel.configure(text=f"-")
 			popup.destroy()
 		else:
-			error_label = tk.Label(popup, text="Πρέπει να συμπληρώσετε όλα τα πεδία", fg="red")
-			error_label.place(x=40, y=1)
+			error_label = tk.Label(popup, text="Πρέπει να συμπληρώσετε όλα τα πεδία          ", fg="red")
+			error_label.place(x=10, y=-6)

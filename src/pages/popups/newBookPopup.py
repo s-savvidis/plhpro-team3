@@ -71,5 +71,5 @@ def newBookPopup(self):
 			popup.destroy()
 		else:
 			error_label = tk.Label(popup, text="Πρέπει να συμπληρώσετε όλα τα πεδία", fg="red")
-			error_label.place(x=40, y=1)
+			error_label.place(x=30, y=1)
 

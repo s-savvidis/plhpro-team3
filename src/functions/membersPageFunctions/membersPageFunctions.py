@@ -60,6 +60,26 @@ def on_double_click(self, event):
             'member_id': value[0]
         }
 
+def check_email(email):
+    # Ελέγχουμε αν το email έχει την κατάλληλη μορφή
+    if "@" in email and "." in email:
+        # Eλέγχουμε ότι το παπάκι "@" βρίσκεται πρίν από την τελευταία τελεία "."
+        papaki = False
+        teleia = False
+        for i, y in enumerate(email):
+            if y == "@":
+                papaki = True
+                # Ελέγχουμε ότι το παπάκι "@" δεν είναι ο πρώτος χαρακτήρας 
+                if i == 0:
+                    return False
+            if y == "." and papaki:
+                teleia = True
+                # ελέγχουμε ότι η τελεία "." δεν είναι ο τελευταίος χαρακτήρας
+                if i == len(email) - 1:
+                    return False
+        return papaki and teleia
+    return False
+
 def centerizePopup(self, popup):	
     # Get the width and height of the popup window
     popup_width = popup.winfo_reqwidth()

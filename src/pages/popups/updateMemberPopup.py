@@ -56,18 +56,41 @@ def updateMemberPopup(self, memberDetails):
 		
 		close_button = tk.Button(popup, text="Κλείσιμο", command=popup.destroy)
 		close_button.grid(row=6, column=1, pady=10, sticky="w")
+  
+
 
 		def updateMember():
+      
+			email = entry_field5.get()
+			
+      
 			memberDetails = {
 			'full_name': entry_field1.get(),
 			'age': age.get(),
 			'occupation': entry_field3.get(),
 			'telephone_number': entry_field4.get(),
-			'email': entry_field5.get(),
+			'email': email,
 			'gender': defaultGender.get(),
 			'member_id': self.selectedMember["member_id"]
 			}
-			dtb.update_member(self.db, memberDetails)
-			showMembers(self, self.db, "")
-			self.memberIDLabel.configure(text=f"-")
-			popup.destroy()
+			
+			if not check_email(email):
+				error_label = tk.Label(popup, text="Το email που εισάγατε δεν έχει σωστή μορφή", fg="red")
+				error_label.place(x=10, y=-6)
+			    
+			elif (
+			entry_field1.get()
+			and age.get()
+			and entry_field3.get()
+			and entry_field4.get()
+  			and email
+			and defaultGender.get()
+			): 
+				dtb.update_member(self.db, memberDetails)
+				showMembers(self, self.db, "")
+				self.memberIDLabel.configure(text=f"-")
+				popup.destroy()
+    
+			else:
+				error_label = tk.Label(popup, text="Πρέπει να συμπληρώσετε όλα τα πεδία          ", fg="red")
+				error_label.place(x=10, y=-6)
