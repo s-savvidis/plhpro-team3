@@ -86,8 +86,22 @@ class library_borrowings():
         borrowing_member_stats = cur.fetchall()
         return borrowing_member_stats
 
+    def stats_pref(self):
+        ''' Κατανομή προτιμήσεων όλων των μελών συνολικά ανά κατηγορία για χρονική περίοδο '''
+        cur = self.conn.cursor()
+        cur.execute('''SELECT COUNT(books.category), books.category FROM borrowings 
+                    INNER JOIN members ON borrowings.member_id=members.member_id 
+                    INNER JOIN books ON borrowings.book_id=books.book_id 
+                    WHERE borrowings.date >= 2023-02-01
+                    AND borrowings.date <= 2023-02-31 
+                    GROUP BY books.category 
+                    ORDER BY COUNT(books.category) DESC;''')
+        pref_members_stats = cur.fetchall()
+        return pref_members_stats
+        
+
     def stats_pref_members(self):
-        ''' Κατανομή προτιμήσεων όλων των μελών ανά κατηγορία για χρονική περίοδο '''
+        ''' Κατανομή προτιμήσεων όλων των μελών ξεχωριστά ανά κατηγορία για χρονική περίοδο '''
         cur = self.conn.cursor()
         cur.execute('''SELECT members.member_id, members.name, COUNT(books.category), books.category FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= "2023-02-01" AND borrowings.date <= "2023-02-31" GROUP BY members.name, books.category;''')
         pref_members_stats = cur.fetchall()
