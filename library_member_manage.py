@@ -54,7 +54,7 @@ class library_members():
     def insert_member(self, memberDetails):
         '''Εισαγωγή μέλους στη βάση'''
 
-        sql = ''' INSERT INTO members (name, age, occupation, tel, email) VALUES (?,?,?,?,?) '''
+        sql = ''' INSERT INTO members (name, age, occupation, tel, email) VALUES (?,?,?,?,?,?) '''
         cur = self.conn.cursor()
         dbConn = self.conn
         try:
@@ -62,7 +62,8 @@ class library_members():
                               memberDetails['age'],
                               memberDetails['occupation'],
                               memberDetails['telephone_number'],
-                              memberDetails['email']
+                              memberDetails['email'],
+                              memberDetails['gender']
                               )
                         )
             logging.info("Εισαγωγή νέου μέλους στη βάση. {}".format(memberDetails['full_name']))
@@ -76,7 +77,7 @@ class library_members():
             return False
     def update_member(self, memberDetails):
         '''Επικαιροποίηση στοιχείων μέλους'''
-        sql = ''' UPDATE members SET (name, age, occupation, tel, email) VALUES (?,?,?,?,?) WHERE member_id=? '''
+        sql = ''' UPDATE members SET (name, age, occupation, tel, email) VALUES (?,?,?,?,?,?,?) WHERE member_id=? '''
         cur = self.conn.cursor()
         dbConn = self.conn
         try:
@@ -85,6 +86,7 @@ class library_members():
                               memberDetails['occupation'],
                               memberDetails['telephone_number'],
                               memberDetails['email'],
+                              memberDetails['gender'],
                               memberDetails['member_id']
                               )
                         )
@@ -106,7 +108,7 @@ class library_members():
             dbConn.commit()
             return True
         except Exception as e:
-            loggin.error("Αποτυχία διαγραφής μέλους με κωδικό {}. Λάθος: {}".format(memberId, e))
+            logging.error("Αποτυχία διαγραφής μέλους με κωδικό {}. Λάθος: {}".format(memberId, e))
             return False
 
 #######################################
