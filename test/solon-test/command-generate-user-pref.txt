@@ -1,0 +1,22 @@
+10442  IFS=$(echo -en "\n\b")
+10443  for i in $(cat book.lst)\ndo\necho "\'${i}\',"\ndone
+10444  for i in $(cat book.lst)\ndo\necho "\\'${i}\\',"\ndone
+10445  for i in $(cat book.lst)\ndo\necho "'${i}',"\ndone
+10446  ll
+10447  python random-selections.py
+10448  ll
+10449  vim t
+10450  cat t
+10451  cat t|sed 's/\ /\'/g'
+10452  cat t|sed 's/\ /\'//g'
+10453  cat t|sed 's/\ /\"/g'
+10454  cat t|sed -e 's/\ /\"/g' -e 's/,/\"/g'
+10455  cat t|sed -e 's/\ /\"/g' -e 's/,/,\"/g'
+10456  cat t|sed -e 's/\ /\"/g' -e 's/,/,\"/g' -e 's/\""/\"/g'
+10457  cat t|sed -e 's/\ /\"/g' -e 's/,/,\"/g' -e 's/\""/\"/g' -e 's/$/\"$/'
+10458  cat t|sed -e 's/\ /\"/g' -e 's/,/,\"/g' -e 's/\""/\"/g' -e 's/$/\"/'
+10459  cat t|sed -e 's/\ /\"/g' -e 's/,/,\"/g' -e 's/\""/\"/g' -e 's/$/\"/' > user_pref.lst
+10460  cat user_pref.lst
+10461  for i in $(cat user_pref.lst)\nDO
+10462  for i in $(cat user_pref.lst)\ndo\necho "bookPref.append([${i}])"\ndone
+10463  python random-selections.py
