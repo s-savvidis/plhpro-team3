@@ -23,31 +23,56 @@ class library_borrowings():
     def __init__(self, conn):
         self.conn = conn
     
+    def search_borrowing(self, member_id=None):
+        '''Search borrowings based on the member_id.'''
+        cur = self.conn.cursor()
+        if member_id:
+            sqlQry = '''SELECT * FROM borrowings WHERE member_id = ? ORDER BY date DESC'''
+            cur.execute(sqlQry, (member_id,))
+        else:
+            sqlQry = '''SELECT * FROM borrowings ORDER BY date DESC'''
+            cur.execute(sqlQry)
+        borrowingRows = cur.fetchall()
+        return borrowingRows
+    
+        
     def borrow_book(self, member_id, book_id, borrow_date):
         cur = self.conn.cursor()
 
         # Αναζήτηση διαθεσιμότητας βιβλίου
-        cur.execute('''SELECT current_stock FROM books WHERE id = ?''', (book_id,))
+        cur.execute('''SELECT current_stock FROM books WHERE book_id = ?''', (book_id,))
         stock = cur.fetchone()[0]
         if stock == 0:
             return False
 
         else:
             # Ανανεώνουμε το απόθεμα
-            cur.execute('''UPDATE books SET current_stock = current_stock - 1 WHERE book_id = ?''', (book_id,))
-
+            try:
+                cur.execute('''UPDATE books SET current_stock = current_stock - 1 WHERE book_id = ?''', (book_id,))
+                logging.info("Επιτυχία μείωσης αποθέματος βιβλίου με κωδικό: {}".format(book_id)) 
+            except Exception as e:
+                logging.error("Αποτυχία ενημέρωσης stock βιβλίου book_id {}".format(book_id))
+                return False       
+            
             # Εισάγουμε τον δανεισμό στην βάση δεδομένων
-            cur.execute('''INSERT INTO borrowing (member_id, book_id, date, return_status, rating) VALUES (?, ?, ?, 0, ?)''', (member_id, book_id, borrow_date, 0))
-
-            return True  
-    
+            try:
+                cur.execute('''INSERT INTO borrowings (member_id, book_id, date, return_status, rating) VALUES (?, ?, ?, 0, ?)''', (member_id, book_id, borrow_date, 0))
+                dbConn = self.conn
+                dbConn.commit()
+                logging.info("Επιτυχία δανεισμού βιβλίου με κωδικό: {}".format(book_id,))
+                return True  
+            except Exception as e:
+                cur.execute('''UPDATE books SET current_stock = current_stock + 1 WHERE book_id = ?''', (book_id,))
+                logging.error("Αποτυχία δανεισμού βιβλίου με κωδικό: {}".format(book_id,))
+                return False
+   
+      
     def return_book(self, member_id, book_id, book_rating):
-        borrowing_id=0
         
         cur = self.conn.cursor()
         
         try:
-            cur.execute('''SELECT borrowing_id FROM borrowings WHERE member_id = ? AND book_id = ? AND return_status = 0''', (member_id,book_id,))
+            cur.execute('''SELECT borrow_id FROM borrowings WHERE member_id = ? AND book_id = ? AND return_status = 0''', (member_id, book_id))
             borrowing_id = cur.fetchone()[0]
         except Exception as e:
             logging.error("Αποτυχία αναζήτησης Borrowing_ID απο member_id {} και book_id {}".format(member_id, book_id))
@@ -55,7 +80,7 @@ class library_borrowings():
         
         # Ανανεώνουμε το απόθεμα
         try:
-            cur.execute('''UPDATE books SET current_stock = current_stock + 1 WHERE id = ?''', (book_id,))
+            cur.execute('''UPDATE books SET current_stock = current_stock + 1 WHERE book_id = ?''', (book_id,))
             logging.info("Επιτυχία αύξησης αποθέματος βιβλίου με κωδικό: {}".format(book_id))
         except Exception as e:
             logging.error("Αποτυχία ενημέρωσης stock βιβλίου book_id {}".format(book_id))
@@ -63,13 +88,28 @@ class library_borrowings():
 
         # Ανανεώνουμε την βάση δεδομένων κατά την επιστροφή του βιβλίου
         try:
-            cur.execute('''UPDATE borrowing SET return_status = 1, rating=? WHERE borrowing_id=?''', (borrowing_id,))
+            cur.execute('''UPDATE borrowings SET return_status = 1, rating=? WHERE borrow_id=?''', (book_rating, borrowing_id))
             dbConn = self.conn
             dbConn.commit()
             logging.info("Επιτυχία επιστροφής βιβλίου κωδικό και κωδικό δανεισμού: {}".format(book_id, borrowing_id))
             return True
         except Exception as e:
+            cur.execute('''UPDATE books SET current_stock = current_stock - 1 WHERE book_id = ?''', (book_id,))            
             logging.error("Αποτυχία επιστροφής βιβλίου {} με κωδικό δανεισμού {}".format(book_id, borrowing_id))
+            return False   
+
+    def delete_borrowing(self, borrowingId):
+        '''Διαγραφή δανεισμού βάση borrowing Id'''
+        dbConn = self.conn
+        sqlQry = ''' DELETE FROM borrowings WHERE borrow_id=? '''
+        try:
+            cur = self.conn.cursor()
+            sqlQry = ''' DELETE FROM borrowings WHERE borrow_id=? '''
+            cur.execute(sqlQry, (borrowingId,))
+            dbConn.commit()
+            return True
+        except Exception as e:
+            logging.error("Αποτυχία διαγραφής δανεισμού με κωδικό {}. Λάθος: {}".format(borrowingId, e))
             return False
     
     def stats_books_member(self):
