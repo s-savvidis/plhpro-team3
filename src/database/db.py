@@ -23,7 +23,7 @@ class Database:
     def search_author(self, bookAuthor):
         '''Αναζήτηση βιβλίων βάση συγγραφέα'''
         cur = self.conn.cursor()
-        sqlQry = ''' SELECT book_id FROM books WHERE author LIKE ? '''
+        sqlQry = ''' SELECT * FROM books WHERE author LIKE ? '''
         cur.execute(sqlQry, ('%' + bookAuthor + '%',))
         bookRows = cur.fetchall()
 
@@ -31,15 +31,19 @@ class Database:
     
     def search_category(self, bookCategory):
         '''Αναζήτηση βιβλίων βάση κατηγορίας'''
+        print("in", bookCategory)
         cur = self.conn.cursor()
-        sqlQry = ''' SELECT book_id FROM books WHERE category LIKE ? '''
+        sqlQry = ''' SELECT * FROM books WHERE category LIKE ? '''
         cur.execute(sqlQry, ('%' + bookCategory + '%',))
         bookRows = cur.fetchall()
+
+        print(bookRows)
 
         return bookRows
 
     def search_isbn(self, bookISBN):
         '''Αναζήτηση βιβλίου βάση ISBN'''
+        print("in")
         cur = self.conn.cursor()
         sqlQry = ''' SELECT * FROM books WHERE isbn=? '''
         cur.execute(sqlQry, (bookISBN,))

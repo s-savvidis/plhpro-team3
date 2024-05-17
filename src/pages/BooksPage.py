@@ -39,6 +39,8 @@ class BooksPage(tk.Frame):
 			"Πληροφορική":"Πληροφορική",
 			"Επιστημονική Φαντασία":"Επιστημονική Φαντασία",
 		}
+		
+		# showBooks(self, self.db)
 
 		self.defaultCategory = tk.StringVar()
 		self.defaultCategory.set(self.categoryOptions["-"])
@@ -63,7 +65,7 @@ class BooksPage(tk.Frame):
 		self.bookIDLabel = tk.Label(self, text=f"-")
 		self.bookIDLabel.grid(row=4, column=1, sticky="w", padx=(0,200))
 
-		search_button = tk.Button(self, text="Αναζήτηση", width=10, command=lambda: showBooks(self, self.db, self.entry_field1.get()))
+		search_button = tk.Button(self, text="Αναζήτηση", width=10, command=lambda: search_books(self, self.db))
 		search_button.grid(row=5, column=0, pady=10, padx=10,sticky="w")
 
 		self.add_button = tk.Button(self, text="Nέο βιβλίο", width=10, command=lambda: newBookPopup(self))
@@ -89,6 +91,8 @@ class BooksPage(tk.Frame):
 		self.result_listbox.config(yscrollcommand=scrollbar.set)
 
 		self.db = dtb("src/database/members_sqlite.db")
+
+		showBooks(self, self.db, "")
 
 		self.result_listbox.bind("<Double-Button-1>", lambda event: on_double_click(self, event))
 
