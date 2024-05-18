@@ -24,11 +24,11 @@ def showMembers(self, db, memberName):
     
     for member in members:
         if member[6] == 'm':
-            gen = 'male'
+            gen = 'άνδρας'
         elif member[6] == 'f':
-            gen = 'female'
+            gen = 'γυναίκα'
         else:
-            gen = 'other'
+            gen = 'άλλο'
         self.result_listbox.insert(tk.END, f"  {member[1]} - Ηλικία: {member[2]} - {member[3]} - {member[4]} - {member[5]} - {gen}")
     switchButtonState(self, 0)
 

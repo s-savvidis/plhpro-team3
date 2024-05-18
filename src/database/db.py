@@ -142,21 +142,14 @@ class Database:
         sql = ''' INSERT INTO members (name, age, occupation, tel, email, gender) VALUES (?,?,?,?,?,?) '''
         cur = self.conn.cursor()
         dbConn = self.conn
-        
-        if memberDetails['gender'] == 'male':
-            gen = 'm'
-        elif memberDetails['gender'] == 'female':
-            gen = 'f'
-        else:
-            gen = 'o'    
-        
+      
         try:
             cur.execute(sql, (memberDetails['full_name'],
                               memberDetails['age'],
                               memberDetails['occupation'],
                               memberDetails['telephone_number'],
                               memberDetails['email'],
-                              gen
+                              memberDetails['gender']
                               )
                         )
             logging.info("Εισαγωγή νέου μέλους στη βάση. {}".format(memberDetails['full_name']))
@@ -168,18 +161,12 @@ class Database:
         except Exception as e:
             logging.error("Πρόβλημα εισαγωγής μέλους {} στη βάση. Πρόβλημα: {}".format(memberDetails['full_name'], e))
             return False
+        
     def update_member(self, memberDetails):
         '''Επικαιροποίηση στοιχείων μέλους'''
         sql = '''UPDATE members SET name=?, age=?, occupation=?, tel=?, email=?, gender=? WHERE member_id=?'''
         cur = self.conn.cursor()
         dbConn = self.conn
-        
-        if memberDetails['gender'] == 'male':
-            gen = 'm'
-        elif memberDetails['gender'] == 'female':
-            gen = 'f'
-        else:
-            gen = 'o'    
         
         try:
             cur.execute(sql, (memberDetails['full_name'],
@@ -187,7 +174,7 @@ class Database:
                               memberDetails['occupation'],
                               memberDetails['telephone_number'],
                               memberDetails['email'],
-                              gen,
+                              memberDetails['gender'],  
                               memberDetails['member_id']
                               )
                         )

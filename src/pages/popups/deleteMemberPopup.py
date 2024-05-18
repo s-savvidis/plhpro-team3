@@ -5,7 +5,7 @@ def deleteMemberPopup(self):
 		popup = tk.Toplevel()
 
 		XYPoints = centerizePopup(self, popup)
-		popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")
+		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
 		tk.Label(popup, text="Επιθυμείτε να διαγράψετε την επιλεγμένη καταχώρηση μέλους;").grid(row=0, column=0, columnspan=2, pady=10, padx=10)
 

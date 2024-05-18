@@ -7,21 +7,21 @@ def updateMemberPopup(self, memberDetails):
 		popup.title("Ενημέρωση μέλους")
 
 		genderOptions = [
-		"female",
-		"male",
-		"other",
+		"γυναίκα",
+		"άνδρας",
+		"άλλο",
 		] 
 
 		if memberDetails["gender"] == 'f':
-			gen = 'female'
+			gen = 'γυναίκα'
 		elif memberDetails["gender"] == 'm':
-			gen = 'male'
+			gen = 'άνδρας'
 		else:
-			gen = 'other'
+			gen = 'άλλο'
 		defaultGender = tk.StringVar(value=gen)
   
 		XYPoints = centerizePopup(self, popup)
-		popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")
+		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
   
 		tk.Label(popup, text="Όνοματεπώνυμο:").grid(row=0, column=0, sticky="w", pady=(10,0), padx=10)  
 		entry_field1 = tk.Entry(popup, textvariable=tk.StringVar(value=memberDetails['name']))
@@ -63,14 +63,20 @@ def updateMemberPopup(self, memberDetails):
       
 			email = entry_field5.get()
 			
-      
+			if defaultGender.get() == 'γυναίκα':
+				gen = 'f'
+			elif defaultGender.get() == 'άνδρας':
+				gen = 'm'
+			else:
+				gen = 'o'
+   
 			memberDetails = {
 			'full_name': entry_field1.get(),
 			'age': age.get(),
 			'occupation': entry_field3.get(),
 			'telephone_number': entry_field4.get(),
 			'email': email,
-			'gender': defaultGender.get(),
+			'gender': gen,
 			'member_id': self.selectedMember["member_id"]
 			}
 			

@@ -18,25 +18,14 @@ def switchButtonState(self, value):
 
 def showBorrowings(self, db, memberID):
     deleteFields(self)
-    borrowings = db.search_borrowing(memberID)
+    borrowings = dtb.search_borrowing(db, memberID)
     self.borrowingShownData = borrowings
     self.result_listbox.delete(0, tk.END)
     
-    if not memberID:  # If memberID is not provided
-        for borrowing in borrowings:
-            self.result_listbox.insert(tk.END, f" member_id: {borrowing[2]} - book_id: {borrowing[1]} - {borrowing[3]} - return_status: {borrowing[4]} rating: {borrowing[5]}")
-    else:
-        for borrowing in borrowings:
-            if borrowing[2] == memberID:
-                # Displaying borrowing details for the specified memberID
-                self.result_listbox.insert(tk.END, f" member_id: {borrowing[2]} - book_id: {borrowing[1]} - {borrowing[3]} - return_status: {borrowing[4]} rating: {borrowing[5]}")
+    for borrowing in borrowings:
+        self.result_listbox.insert(tk.END, f" member_id: {borrowing[2]} - book_id: {borrowing[1]} - {borrowing[3]} - return_status: {borrowing[4]} rating: {borrowing[5]}")
     
     switchButtonState(self, 0)
-
-
- 
- 
-
     
     
 def deleteBorrowing(self, db, borrowingId):

@@ -8,12 +8,12 @@ def newMemberPopup(self):
 	popup.title("Εισαγωγή νέου μέλους")
 	
 	XYPoints = centerizePopup(self, popup)
-	popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")
+	popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
 	genderOptions = [
-		"female",
-		"male",
-		"other",
+		"γυναίκα",
+		"άνδρας",
+		"άλλο",
 	] 
 
 	defaultGender = tk.StringVar()
@@ -54,6 +54,13 @@ def newMemberPopup(self):
 	def addMember():
 		
 		email = entry_field5.get()
+			
+		if defaultGender.get() == 'γυναίκα':
+			gen = 'f'
+		elif defaultGender.get() == 'άνδρας':
+			gen = 'm'
+		else:
+			gen = 'o'
 
 		memberDetails = {
 			'full_name': entry_field1.get(),
@@ -61,7 +68,7 @@ def newMemberPopup(self):
 			'occupation': entry_field3.get(),
 			'telephone_number': entry_field4.get(),
 			'email': email,
-			'gender': defaultGender.get()
+			'gender': gen
 		}
   
 		if not check_email(email):

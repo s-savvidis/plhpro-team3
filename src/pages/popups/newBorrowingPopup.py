@@ -8,7 +8,7 @@ def newBorrowingPopup(self):
 	popup.title("Εισαγωγή νέου δανεισμού")
 	
 	XYPoints = centerizePopup(self, popup)
-	popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")
+	popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
 	tk.Label(popup, text="ID μέλους:").grid(row=0, column=0, sticky="w", pady=(20,0), padx=10)  
 	entry_field1 = tk.Entry(popup)
