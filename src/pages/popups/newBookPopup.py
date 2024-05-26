@@ -8,7 +8,7 @@ def newBookPopup(self):
 	popup.title("Εισαγωγή νέου βιβλίου")
 	
 	XYPoints = centerizePopup(self, popup)
-	popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")
+	popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
 	defaultCategory = tk.StringVar()
 	defaultCategory.set(self.categoryOptions["-"])

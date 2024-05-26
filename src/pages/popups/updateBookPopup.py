@@ -7,7 +7,7 @@ def updateBookPopup(self, bookDetails):
 		popup.title("Ενημέρωση βιβλίου")
 
 		XYPoints = centerizePopup(self, popup)
-		popup.geometry(f"+{XYPoints["x"]}+{XYPoints["y"]}")
+		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
 		tk.Label(popup, text="Γενικό απόθεμα:").grid(row=0, column=0, sticky="w", padx=10)
 		tStock=tk.IntVar(value=bookDetails["total_stock"])
