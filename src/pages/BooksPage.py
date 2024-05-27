@@ -1,12 +1,7 @@
 import logging
 import tkinter as tk
-#from src.database.db import Database as dtb
 from src.database.library_books_manage import library_books as dtb
 from .HomePage import HomePage
-#from src.functions.booksPageFunctions.booksPageFunctions import *
-from src.pages.popups.newBookPopup import newBookPopup
-from src.pages.popups.updateBookPopup import updateBookPopup
-from src.pages.popups.deleteBookPopup import deleteBookPopup
 
 class BooksPage(tk.Frame):
 	def __init__(self, parent, controller):
@@ -41,8 +36,6 @@ class BooksPage(tk.Frame):
 			"Πληροφορική":"Πληροφορική",
 			"Επιστημονική Φαντασία":"Επιστημονική Φαντασία",
 		}
-		
-		# showBooks(self, self.db)
 
 		self.defaultCategory = tk.StringVar()
 		self.defaultCategory.set(self.categoryOptions["-"])
@@ -70,7 +63,7 @@ class BooksPage(tk.Frame):
 		search_button = tk.Button(self, text="Αναζήτηση", width=10, command=lambda: self.search_books())
 		search_button.grid(row=5, column=0, pady=10, padx=10,sticky="w")
 
-		self.add_button = tk.Button(self, text="Nέο βιβλίο", width=10, command=lambda: newBookPopup(self))
+		self.add_button = tk.Button(self, text="Nέο βιβλίο", width=10, command=lambda: self.newBookPopup())
 		self.add_button.grid(row=0, column=2, pady=(10,0), padx=10, sticky="ew")
 		
 		self.save_button = tk.Button(self, text="Ενημέρωση", state="disabled", width=10, command=lambda:self.updateBookPopup(self.selectedBook))
@@ -139,36 +132,6 @@ class BooksPage(tk.Frame):
 			self.result_listbox.insert(tk.END, f"  {book[1]} - {book[3]} - ISBN: {book[4]} | Total stock: {book[5]} Current stock: {book[6]}") 
 		self.switchButtonState(0)
 
-	# def search_books(self, db):
-	#     title = self.entry_field1.get()
-	#     category = self.defaultCategory.get()
-	#     author = self.entry_field2.get()
-	#     isbn = self.entry_field4.get()
-
-	#     result_sets = []
-	
-	#     if title:
-	#         result_sets.append(set(dtb.search_title(db, title)))
-	#         print(*set(dtb.search_title(db, title)))
-	#     if category:
-	#         result_sets.append(set(dtb.search_category(db, category)))
-	#         print(*set(dtb.search_category(db, title)))
-	#     if author:
-	#         result_sets.append(set(dtb.search_author(db, author)))
-	#         print(*set(dtb.search_author(db, title)))
-	#     if isbn:
-	#         result_sets.append(set(dtb.search_isbn(db, isbn)))
-	
-	#     if result_sets:
-	#         final_results = set.intersection(*result_sets)
-	#         self.bookShownData = final_results
-	#         self.result_listbox.delete(0, tk.END) 
-	#         for book in final_results:
-	#             self.result_listbox.insert(tk.END, f"{  book[1]} - {book[3]} - ISBN: {book[4]} | Total stock: {book[5]} Current stock: {book[6]}") 
-	#         switchButtonState(self, 0)
-	#     else:
-	#         final_results = set()
-
 	def search_books(self):
 		title = self.entry_field1.get()
 		category = self.defaultCategory.get()
@@ -181,35 +144,38 @@ class BooksPage(tk.Frame):
 		logging.info("Search Criteria - Title:{} Category:{} Author:{} ISBN:{}".format(title, category, author, isbn))
 
 		if title:
-			#title_results = set(self.db.search_title(title))
-			title_results = self.db.search_title(title)
-			#result_sets = self.db.search_title(title)
-			result_sets.append(title_results)
-			print("Title Results:", title_results)  # Debug print statement
-		if category:
-			print(*self.db.search_category(category))
-			category_results = self.db.search_category(category)
-			result_sets.append(category_results)
-			print("Category Results:", category_results)  # Debug print statement
+			# Αναζήτηση βάση τίτλου. Μηδενισμός υπολοίπων.
+			category = "-"
+			author = ""
+			isbn = ""
+			result_sets = self.db.search_title(title)
+			logging.debug("Title Results:{}".format(result_sets))  # Debug print statement
+		if category != "-":
+			# Αναζήτηση βάση κατηγορίας. Μηδενισμός υπολοίπων.
+			author = ""
+			isbn = ""
+			result_sets = self.db.search_category(category)
+			logging.debug("Category Results:{}".format(result_sets))  # Debug print statement
 		if author:
-			author_results = set(self.db.search_author(author))
-			result_sets.append(author_results)
-			print("Author Results:", author_results)  # Debug print statement
+			# Αναζήτηση βάση συγγραφέα. Μηδενισμός υπολοίπων.
+			isbn = ""
+			result_sets = self.db.search_author(author)
+			logging.info("Author Results:{}".format(result_sets))  # Debug print statement
 		if isbn:
-			isbn_results = set(self.db.search_isbn(isbn))
-			result_sets.append(isbn_results)
-			print("ISBN Results:", isbn_results)  # Debug print statement
+			# Αναζήτηση βάση ISBN.
+			result_sets = set(self.db.search_isbn(isbn))
+			logging.debug("ISBN Results: {}".format(isbn_results))  # Debug print statement
 
 		if result_sets:
-			#final_results = set.intersection(*result_sets)
 			final_results = result_sets
-			print("Final Results:", final_results)  # Debug print statement
+			logging.debug("Final Results: {}".format(final_results))  # Debug print statement
 			self.bookShownData = final_results
 			self.result_listbox.delete(0, tk.END)
 
 			for book in final_results:
 				# Ensure the book data has the expected structure
 				try:
+					print(book)
 					self.result_listbox.insert(tk.END, f"{book[1]} - {book[3]} - ISBN: {book[4]} | Total stock: {book[5]} Current stock: {book[6]}")
 					print(f"Inserted into Listbox: {book[1]} - {book[3]} - ISBN: {book[4]} | Total stock: {book[5]} Current stock: {book[6]}")  # Debug print
 				except IndexError as e:
@@ -262,3 +228,131 @@ class BooksPage(tk.Frame):
 		x = parent_x + (parent_width - popup_width) // 2
 		y = parent_y + (parent_height - popup_height) // 2
 		return {"x":x,"y":y}
+
+	###############################################################
+	# Pop-up code
+	def newBookPopup(self):
+		popup = tk.Toplevel()
+		popup.title("Εισαγωγή νέου βιβλίου")
+
+		XYPoints = self.centerizePopup(popup)
+		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
+
+		defaultCategory = tk.StringVar()
+		defaultCategory.set(self.categoryOptions["-"])
+
+		tk.Label(popup, text="Τίτλος*:").grid(row=0, column=0, sticky="w", pady=(20,0), padx=10)  
+		entry_field1 = tk.Entry(popup)
+		entry_field1.grid(row=0, column=1, sticky="ew", pady=(20,0), padx=10)
+
+		tk.Label(popup, text="Συγγραφέας*:").grid(row=1, column=0, sticky="w", padx=10)
+		entry_field2 = tk.Entry(popup)
+		entry_field2.grid(row=1, column=1, sticky="ew", padx=10)
+
+		tk.Label(popup, text="Κατηγορία:").grid(row=2, column=0, sticky="w", padx=10)
+		entry_field3 = tk.OptionMenu(popup, defaultCategory, *self.categoryOptions)
+		entry_field3.grid(row=2, column=1, sticky="ew", padx=10)
+
+		tk.Label(popup, text="ISBN*:").grid(row=3, column=0, sticky="w", padx=10)
+		entry_field4 = tk.Entry(popup)
+		entry_field4.grid(row=3, column=1, sticky="ew", padx=10)
+
+		tk.Label(popup, text="Γενικό απόθεμα:").grid(row=4, column=0, sticky="w", padx=10)
+		tStock=tk.IntVar(value=0)
+		entry_field5 = tk.Spinbox(popup, from_= 0, to = 50, increment=1,
+		textvariable=tStock)
+		entry_field5.grid(row=4, column=1, sticky="ew", padx=10)
+
+		tk.Label(popup, text="Τωρινό απόθεμα:").grid(row=5, column=0, sticky="w", padx=10)
+		cStock=tk.IntVar(value=0)
+		entry_field6 = tk.Spinbox(popup, from_= 0, to = 50, width=4, increment=1,
+		textvariable=cStock)
+		entry_field6.grid(row=5, column=1, sticky="ew", padx=10)
+
+		insert_button = tk.Button(popup, text="Εισαγωγή", command= lambda: addBook())
+		insert_button.grid(row=6, column=0, pady=10, padx=10,sticky="w")
+
+		close_button = tk.Button(popup, text="Κλείσιμο", command=popup.destroy)
+		close_button.grid(row=6, column=1, pady=10, sticky="w")
+
+		def addBook():
+			bookDetails = {
+				'title': entry_field1.get(),
+				'category': defaultCategory.get(),
+				'author': entry_field2.get(),
+				'isbn': entry_field4.get(),
+				'total_stock': entry_field5.get(),
+				'current_stock': entry_field6.get()
+			}
+			if (
+			entry_field1.get()
+			and entry_field2.get()
+			and entry_field4.get()
+			):
+				self.db.insert_book(bookDetails)
+				self.showBooks("")
+				self.bookIDLabel.configure(text=f"-")
+				popup.destroy()
+			else:
+				error_label = tk.Label(popup, text="Συμπληρώστε όλα τα απαραίτητα πεδία με *", fg="red")
+				error_label.place(x=40, y=1)
+
+	def deleteBookPopup(self):
+			popup = tk.Toplevel()
+
+			XYPoints = self.centerizePopup(popup)
+			popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
+
+			tk.Label(popup, text="Επιθυμείτε να διαγράψετε την επιλεγμένη καταχώρηση βιβλίου;").grid(row=0, column=0, columnspan=2, pady=10, padx=10)
+
+			insert_button = tk.Button(popup, text="Ναι, διαγραφή", command= lambda: deleteAndClose())
+			insert_button.grid(row=1, column=0, pady=10, padx=20,sticky="w")
+
+			close_button = tk.Button(popup, text="Ακύρωση", command=popup.destroy)
+			close_button.grid(row=1, column=1, pady=10, padx=20, sticky="e")
+
+			def deleteAndClose():
+				self.deleteBook(self.selectedBook["book_id"])
+				self.showBooks("")
+				self.bookIDLabel.configure(text=f"-")
+				popup.destroy()
+
+	def updateBookPopup(self, bookDetails):
+			popup = tk.Toplevel()
+			popup.title("Ενημέρωση βιβλίου")
+
+			XYPoints = self.centerizePopup(self, popup)
+			popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
+
+			tk.Label(popup, text="Γενικό απόθεμα:").grid(row=0, column=0, sticky="w", padx=10)
+			tStock=tk.IntVar(value=bookDetails["total_stock"])
+			entry_field5 = tk.Spinbox(popup, from_= 0, to = 50, increment=1,
+			textvariable=tStock)
+			entry_field5.grid(row=0, column=1, sticky="ew", padx=10)
+
+			tk.Label(popup, text="Τωρινό απόθεμα:").grid(row=1, column=0, sticky="w", padx=10)
+			cStock=tk.IntVar(value=bookDetails["current_stock"])
+			entry_field6 = tk.Spinbox(popup, from_= 0, to = 50, width=4, increment=1,
+			textvariable=cStock)
+			entry_field6.grid(row=1, column=1, sticky="ew", padx=10)
+
+			insert_button = tk.Button(popup, text="Ενημέρωση", command= lambda: updateBook(entry_field5.get(), entry_field6.get()))
+			insert_button.grid(row=2, column=0, pady=10, padx=10,sticky="w")
+
+			close_button = tk.Button(popup, text="Κλείσιμο", command=popup.destroy)
+			close_button.grid(row=2, column=1, pady=10, sticky="w")
+
+			def updateBook(tStock, cStock):
+				bookDetails = {
+					'title': self.entry_field1.get(),
+					'category': self.defaultCategory.get(),
+					'author': self.entry_field2.get(),
+					'isbn': self.entry_field4.get(),
+					'total_stock': tStock,
+					'current_stock': cStock,
+					'book_id': self.selectedBook["book_id"]
+				}
+				self.db.update_book(bookDetails)
+				self.showBooks("")
+				self.bookIDLabel.configure(text=f"-")
+				popup.destroy()
