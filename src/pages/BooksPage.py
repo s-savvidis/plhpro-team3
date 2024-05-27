@@ -187,8 +187,9 @@ class BooksPage(tk.Frame):
 			self.result_listbox.insert(tk.END, "No results found.")
 
 
-	def deleteBook(self, db, bookId):
-	    self.db.delete_book(db, bookId)
+	def deleteBook(self, bookId):
+		""" Διαγραφή Βιβλίου με χρήση bookId """
+		self.db.delete_book(db, bookId)
 
 	def on_double_click(self, event):
 		selection = self.result_listbox.curselection()
