@@ -20,9 +20,13 @@ def create_connection(db_file):
 
 class library_borrowings():
     '''Κλάση διαχείρισης δανεισμών.'''
-    def __init__(self, conn):
-        self.conn = conn
-    
+    def __init__(self, database):
+        try:
+            self.conn = sqlite3.connect(database)
+        except Exception as e:
+            logging.error("Error Establishing connection to db {}. Error: {}".format(database, e))
+            sys.exit(1)
+
     def borrow_book(self, member_id, book_id, borrow_date):
         cur = self.conn.cursor()
 
@@ -103,7 +107,7 @@ class library_borrowings():
     def stats_author(self):
         ''' Πλήθος δανεισμών ανά συγγραφέα '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT COUNT(books.author), books.author FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id GROUP BY books.author ORDER BY books.author;''')
+        cur.execute('''SELECT COUNT(books.author), books.author FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id GROUP BY books.author ORDER BY COUNT(books.author) DESC;''')
         author_stats = cur.fetchall()
         return author_stats
 

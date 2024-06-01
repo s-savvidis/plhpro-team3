@@ -14,7 +14,8 @@ class HomePage(tk.Frame):
 		from .BooksPage import BooksPage
 		from .UsersPage import UsersPage
 		from .BorrowingsPage import BorrowingsPage
-		from .StatisticsPage import StatisticsPage
+		#from .StatisticsPage import StatisticsPage
+		from .MainStatsPage import StatsPage
 	
         # Κουμπί σελίδας βιβλίων
 		books_image_path = os.path.join(images_dir, "books.png")
@@ -53,7 +54,7 @@ class HomePage(tk.Frame):
 		users_image_path = os.path.join(images_dir, "statistics.png")
 		raw_users_image = tk.PhotoImage(file=users_image_path)
 		resizedUsersImage = raw_users_image.subsample(4, 4)  
-		usersButton = tk.Button(self, image=resizedUsersImage, command=lambda: controller.show_frame(StatisticsPage))
+		usersButton = tk.Button(self, image=resizedUsersImage, command=lambda: controller.show_frame(StatsPage))
 		usersButton.image = resizedUsersImage  
 		usersButton.grid(row=3, column=1, padx=(50, 100))
 
