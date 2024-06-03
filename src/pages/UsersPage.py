@@ -56,7 +56,10 @@ class UsersPage(tk.Frame):
 		self.delete_button.grid(row=2, column=2, padx=10, sticky="w")
 
 		self.recommend_button = tk.Button(self, text="Προτάσεις", state="disabled", width=10, command=lambda: self.recommendationsPopup(self.selectedMember))
-		self.recommend_button.grid(row=3, column=2, padx=10, sticky="w")		
+		self.recommend_button.grid(row=3, column=2, padx=10, sticky="w")
+  
+		self.preferences_button = tk.Button(self, text="Προτιμήσεις", state="disabled", width=10, command=lambda: self.preferencesPopup(self.selectedMember))
+		self.preferences_button.grid(row=4, column=2, padx=10, sticky="w")		
 
 		home_button = tk.Button(self, text="Αρχική σελίδα", width=10, command=lambda:controller.show_frame(HomePage))
 		home_button.grid(row=8, column=0, columnspan=2, pady=10, padx=10, sticky="w")
@@ -93,10 +96,12 @@ class UsersPage(tk.Frame):
 			self.save_button['state'] = tk.DISABLED
 			self.delete_button['state'] = tk.DISABLED
 			self.recommend_button['state'] = tk.DISABLED
+			self.preferences_button['state'] = tk.DISABLED
 		elif (value == 1):
 			self.save_button['state'] = tk.NORMAL
 			self.delete_button['state'] = tk.NORMAL
 			self.recommend_button['state'] = tk.NORMAL
+			self.preferences_button['state'] = tk.NORMAL
 
 	def showMembers(self, memberName):
 		self.deleteFields()
@@ -431,3 +436,6 @@ class UsersPage(tk.Frame):
 
 			popup.rowconfigure(1, weight=1)
 			popup.columnconfigure(0, weight=1)
+   
+	def preferencesPopup(self, selectedMember):
+		pass
