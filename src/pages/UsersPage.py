@@ -6,7 +6,7 @@ from .HomePage import HomePage
 class UsersPage(tk.Frame):
 	def __init__(self, parent, controller):
 		tk.Frame.__init__(self, parent)
-
+		
 		self.memberShownData = []
 		self.selectedMember = {
 				'name',
@@ -409,7 +409,7 @@ class UsersPage(tk.Frame):
 
 	def recommendationsPopup(self, selectedMember):
 		popup = tk.Toplevel()
-
+  
 		XYPoints = self.centerizePopup(popup)
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
@@ -422,20 +422,25 @@ class UsersPage(tk.Frame):
 			recommendations_listbox.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
 			def showRecommendations():
-				db = dtb()
-				recommendations = db.recommendations(member_id)
+				db = dtb("src/database/members_sqlite.db")
+				recommendations = self.db.recommendations(member_id)
 				for book_id, title in recommendations:
 					recommendations_listbox.insert(tk.END, f"{title}, ID: {book_id}")
         
 			showRecommendations()
 		else:
 			tk.Label(popup, text="Δεν βρέθηκε το ID μέλους.").grid(row=0, column=0, columnspan=2, pady=10, padx=10)
-
-			close_button = tk.Button(popup, text="Κλείσιμο", command=popup.destroy)
-			close_button.grid(row=2, column=1, pady=10, sticky="e")
-
-			popup.rowconfigure(1, weight=1)
-			popup.columnconfigure(0, weight=1)
+    
+		close_button = tk.Button(popup, text="Κλείσιμο", command=popup.destroy)
+		close_button.grid(row=2, column=1, pady=10, sticky="e")
+		popup.rowconfigure(1, weight=1)
+		popup.columnconfigure(0, weight=1)
    
 	def preferencesPopup(self, selectedMember):
+		popup = tk.Toplevel()
+
+		XYPoints = self.centerizePopup(popup)
+		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
+
+		member_id = selectedMember.get("member_id", None)
 		pass
