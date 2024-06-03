@@ -7,21 +7,15 @@ import pandas as pd
 
 logging.basicConfig(level=logging.DEBUG)
 
-def create_connection(db_file):
-    """ create a database connection to a SQLite database """
-    try:
-        conn = sqlite3.connect(db_file)
-        #sqVer = sqlite3.version
-        #logging.info(sqVer)
-        return conn
-    except Error as e:
-        logging.error(e)
-        sys.exit(1)
-
 class library_borrowings():
     '''Κλάση διαχείρισης δανεισμών.'''
-    def __init__(self, conn):
-        self.conn = conn
+    def __init__(self, database):
+        #self.conn = conn
+        try:
+            self.conn = sqlite3.connect(database)
+        except Exception as e:
+            logging.error("Error Establishing connection to db {}. Error: {}".format(database, e))
+            sys.exit(1)
     
     def search_borrowing(self, member_id=None):
         '''Αναζήτηση δανεισμών βάσξη member_id.'''

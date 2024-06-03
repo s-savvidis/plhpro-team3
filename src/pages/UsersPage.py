@@ -58,8 +58,8 @@ class UsersPage(tk.Frame):
 		self.recommend_button = tk.Button(self, text="Προτάσεις", state="disabled", width=10, command=lambda: self.recommendationsPopup(self.selectedMember))
 		self.recommend_button.grid(row=3, column=2, padx=10, sticky="w")		
 
-		home_button = tk.Button(self, text="Αρχική σελίδα", width=10, command=lambda:self.handleHomePage(controller))
-		home_button.grid(row=7, column=0, columnspan=2, pady=10, padx=10, sticky="w")
+		home_button = tk.Button(self, text="Αρχική σελίδα", width=10, command=lambda:controller.show_frame(HomePage))
+		home_button.grid(row=8, column=0, columnspan=2, pady=10, padx=10, sticky="w")
 
 		listbox_frame = tk.Frame(self)
 		listbox_frame.grid(row=7, column=0, padx=10, pady=10, columnspan=3, sticky="nsew")
@@ -351,8 +351,6 @@ class UsersPage(tk.Frame):
 		tk.Label(popup, text="Φύλο:").grid(row=5, column=0, sticky="w", padx=10)
 		entry_field6 = tk.OptionMenu(popup, defaultGender, *genderOptions)
 		entry_field6.grid(row=5, column=1, sticky="ew", padx=10)
-
-
 
 		insert_button = tk.Button(popup, text="Ενημέρωση", command=lambda: updateMember())
 		insert_button.grid(row=6, column=0, pady=10, padx=10,sticky="w")
