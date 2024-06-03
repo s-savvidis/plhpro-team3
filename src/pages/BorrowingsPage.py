@@ -40,7 +40,7 @@ class BorrowingsPage(tk.Frame):
 		search_button = tk.Button(self, text="Αναζήτηση", width=10, command=lambda: self.showBorrowings(self.entry_field1.get()))
 		search_button.grid(row=5, column=0, pady=10, padx=10,sticky="w")
 
-		self.borrow_button = tk.Button(self, text="Δανεισμοός", width=10, command=lambda: self.newBorrowingPopup())
+		self.borrow_button = tk.Button(self, text="Δανεισμός", width=10, command=lambda: self.newBorrowingPopup())
 		self.borrow_button.grid(row=0, column=2, pady=(10,0), padx=10, sticky="ew")
 		
 		self.return_button = tk.Button(self, text="Επιστροφή", state="disabled", width=10, command=lambda:self.returnBookPopup())
