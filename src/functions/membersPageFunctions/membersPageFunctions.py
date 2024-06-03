@@ -1,6 +1,8 @@
 import tkinter as tk
 from src.database.db import Database as dtb
 
+
+
 def deleteFields(self):
     self.entry_field1.delete(0, tk.END)
     self.entry_field2.delete(0, tk.END) 
@@ -9,12 +11,15 @@ def deleteFields(self):
     self.entry_field5.delete(0, tk.END)
 
 def switchButtonState(self, value):
-    if (value == 0):
+    if value == 0:
         self.save_button['state'] = tk.DISABLED
         self.delete_button['state'] = tk.DISABLED
-    elif (value == 1):
+        self.recommend_button['state'] = tk.DISABLED
+    elif value == 1:
         self.save_button['state'] = tk.NORMAL
         self.delete_button['state'] = tk.NORMAL
+        self.recommend_button['state'] = tk.NORMAL
+
 
 def showMembers(self, db, memberName):
     deleteFields(self)
@@ -34,6 +39,7 @@ def showMembers(self, db, memberName):
 
 def deleteMember(self, db, memberId):
     dtb.delete_member(db, memberId)
+     
 
 def on_double_click(self, event):
     selection = self.result_listbox.curselection()

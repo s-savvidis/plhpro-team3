@@ -204,14 +204,15 @@ class Database:
     
     
     def search_borrowing(self, member_id=None):
-        '''Search borrowings based on the member_id.'''
+        '''Αναζήτηση δανεισμών βάσξη member_id.'''
         cur = self.conn.cursor()
+        
+            #Αν δώσουμε member id εμφανίζει τους δανεισμούς του συγκεκριμένου μέλους        
         if member_id:
-            # When member_id is provided, search only for that specific member
             sqlQry = '''SELECT * FROM borrowings WHERE member_id = ? ORDER BY date DESC'''
             cur.execute(sqlQry, (member_id,))
         else:
-            # When member_id is not provided, retrieve all borrowings
+            # Όταν δεν έχουμε πληκτρολογήσει member id εμφανίζει όλους τους δανεισμούς
             sqlQry = '''SELECT * FROM borrowings ORDER BY date DESC'''
             cur.execute(sqlQry)
         borrowingRows = cur.fetchall()
@@ -219,6 +220,7 @@ class Database:
     
         
     def borrow_book(self, member_id, book_id, borrow_date):
+        ''' Συνάρτηση δανεισμού '''
         cur = self.conn.cursor()
 
         # Αναζήτηση διαθεσιμότητας βιβλίου
@@ -247,12 +249,10 @@ class Database:
                 logging.error("Αποτυχία δανεισμού βιβλίου με κωδικό: {}".format(book_id,))
                 return False
    
-   
-   
-   
-   
+        
    
     def return_book(self, member_id, book_id, book_rating):
+        ''' Συνάρτηση επιστροφής βιβλίου '''
         
         cur = self.conn.cursor()
         
@@ -296,5 +296,64 @@ class Database:
             logging.error("Αποτυχία διαγραφής δανεισμού με κωδικό {}. Λάθος: {}".format(borrowingId, e))
             return False
         
+    def recommendations(self, member_id):
+        ''' Πρόταση δανεισμού μέσω Ratings '''
+        cur = self.conn.cursor()
+
+        # Βρίσκουμε το ιστορικό δανεισμών του μέλους στο οποίο θέλουμε να προτείνουμε βιβλία
+        cur.execute('''SELECT book_id FROM borrowings WHERE member_id = ?''', (member_id,))
+        borrowing_history = cur.fetchall()
+
+        # Αν έχει δανειστεί μέχρι πέντε βιβλία τότε λόγο μη επαρκούς ιστορικού του προτείνουμε τα βιβλία με τις καλύτερες 
+        # συνολικές κριτικές από πέντε διαφορετικές κατηγορίες
+        if len(borrowing_history) <= 5:
+            cur.execute('''SELECT books.book_id, books.title, AVG(borrowings.rating) 
+                       FROM books 
+                       LEFT JOIN borrowings ON books.book_id = borrowings.book_id 
+                       WHERE books.category IN (SELECT DISTINCT category FROM books) 
+                       GROUP BY books.book_id 
+                       ORDER BY AVG(borrowings.rating) DESC 
+                       LIMIT 5''')
+            suggestions = cur.fetchall()
+        else:
+            # Βρίσκουμε τα πέντε βιβλία που του άρεσαν περισσότερο
+            cur.execute('''SELECT book_id FROM borrowings 
+                       WHERE member_id = ? 
+                       ORDER BY rating DESC 
+                       LIMIT 5''', (member_id,))
+            top_rated = cur.fetchall()
+        
+            suggestions = []
+
+            # Βρίσκουμε τις κατηγορίες στις οποίες ανήκουν τα αγαπημένα του βιβλία
+            top_categ = []
+            for book_id, in top_rated:
+                cur.execute('''SELECT category FROM books WHERE book_id = ?''', (book_id,))
+                category = cur.fetchone()[0]
+                if category not in top_categ:
+                    top_categ.append(category)
+                    if len(top_categ) >= 5:
+                        break
+
+            # Βρίσκουμε βιβλία τα οποία ο χρήστης δεν έχει δανειστεί 
+            for category in top_categ:
+                cur.execute('''SELECT books.book_id, books.title, AVG(borrowings.rating) 
+                           FROM books 
+                           LEFT JOIN borrowings ON books.book_id = borrowings.book_id 
+                           WHERE books.category = ? AND borrowings.member_id IS NULL
+                           GROUP BY books.book_id, books.title 
+                           ORDER BY AVG(borrowings.rating) DESC''', (category,))
+                top_in_cat = cur.fetchall()
+                for book_id, title, avg_rating in top_in_cat:
+                    if book_id not in [book_id for book_id, in borrowing_history]:
+                        suggestions.append((book_id, title))
+                        if len(suggestions) >= 5:  
+                            break
+                if len(suggestions) >= 5:
+                    break
+
+        return suggestions
+
+                
     def close_connection(self):
         self.conn.close()

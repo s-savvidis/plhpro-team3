@@ -5,6 +5,7 @@ from src.functions.membersPageFunctions.membersPageFunctions import *
 from src.pages.popups.newMemberPopup import newMemberPopup
 from src.pages.popups.updateMemberPopup import updateMemberPopup
 from src.pages.popups.deleteMemberPopup import deleteMemberPopup
+from src.pages.popups.recommendationsPopup import recommendationsPopup
 
 class UsersPage(tk.Frame):
 	def __init__(self, parent, controller):
@@ -58,6 +59,8 @@ class UsersPage(tk.Frame):
 		self.delete_button = tk.Button(self, text="Διαγραφή", state="disabled", width=10, command=lambda:deleteMemberPopup(self))
 		self.delete_button.grid(row=2, column=2, padx=10, sticky="w")
 
+		self.recommend_button = tk.Button(self, text="Προτάσεις", state="disabled", width=10, command=lambda: recommendationsPopup(self, self.selectedMember))
+		self.recommend_button.grid(row=3, column=2, padx=10, sticky="w")		
 
 		home_button = tk.Button(self, text="Αρχική σελίδα", width=10, command=lambda:controller.show_frame(HomePage))
 		home_button.grid(row=8, column=0, columnspan=2, pady=10, padx=10, sticky="w")
