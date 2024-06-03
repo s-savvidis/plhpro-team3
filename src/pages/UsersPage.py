@@ -444,4 +444,47 @@ class UsersPage(tk.Frame):
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
 		member_id = selectedMember.get("member_id", None)
-		pass
+
+		if member_id is not None:
+			tk.Label(popup, text="Προτιμήσεις δανεισμών για το επιλεγμένο μέλος:").grid(row=0, column=0, columnspan=2, pady=10, padx=10)
+
+			start_date_label = tk.Label(popup, text="Από:")
+			start_date_label.grid(row=1, column=0, padx=10, pady=5, sticky="e")
+			start_date_entry = tk.Entry(popup)
+			start_date_entry.grid(row=1, column=1, padx=10, pady=5)
+
+			end_date_label = tk.Label(popup, text="Έως:")
+			end_date_label.grid(row=2, column=0, padx=10, pady=5, sticky="e")
+			end_date_entry = tk.Entry(popup)
+			end_date_entry.grid(row=2, column=1, padx=10, pady=5)
+
+			preferences_listbox = tk.Listbox(popup)
+			preferences_listbox.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+   
+			insert_button = tk.Button(popup, text="Εμφάνιση", command=lambda: showPreferences())
+			insert_button.grid(row=4, column=0, pady=10, padx=10,sticky="w")
+		
+			close_button = tk.Button(popup, text="Κλείσιμο", command=popup.destroy)
+			close_button.grid(row=4, column=1, pady=10, sticky="w")
+
+			def showPreferences():
+				start_date = start_date_entry.get()
+				end_date = end_date_entry.get()
+	
+				if start_date == "" or end_date == "":
+					preferences = self.db.stats_borrowing_member(member_id)
+				else:
+					preferences = self.db.stats_borrowing_member(member_id, start_date=start_date, end_date=end_date)
+				
+				preferences_listbox.delete(0, tk.END)
+    
+				for count, bookCategory in preferences:
+					preferences_listbox.insert(tk.END, f"{bookCategory},: {count}")
+	
+	
+
+		else:
+			tk.Label(popup, text="Δεν βρέθηκε το ID μέλους.").grid(row=0, column=0, columnspan=2, pady=10, padx=10)
+
+		popup.rowconfigure(3, weight=1)
+		popup.columnconfigure(0, weight=1)
