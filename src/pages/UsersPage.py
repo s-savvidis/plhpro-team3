@@ -409,6 +409,7 @@ class UsersPage(tk.Frame):
 
 	def recommendationsPopup(self, selectedMember):
 		popup = tk.Toplevel()
+		popup.title("Προτάσεις Δανεισμών")
   
 		XYPoints = self.centerizePopup(popup)
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
@@ -422,7 +423,6 @@ class UsersPage(tk.Frame):
 			recommendations_listbox.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
 			def showRecommendations():
-				db = dtb("src/database/members_sqlite.db")
 				recommendations = self.db.recommendations(member_id)
 				for book_id, title in recommendations:
 					recommendations_listbox.insert(tk.END, f"{title}, ID: {book_id}")
@@ -438,6 +438,7 @@ class UsersPage(tk.Frame):
    
 	def preferencesPopup(self, selectedMember):
 		popup = tk.Toplevel()
+		popup.title("Προτιμήσεις μέλους")
 
 		XYPoints = self.centerizePopup(popup)
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
