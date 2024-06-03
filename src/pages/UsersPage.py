@@ -477,9 +477,13 @@ class UsersPage(tk.Frame):
 					preferences = self.db.stats_borrowing_member(member_id, start_date=start_date, end_date=end_date)
 				
 				preferences_listbox.delete(0, tk.END)
-    
-				for count, bookCategory in preferences:
-					preferences_listbox.insert(tk.END, f"{bookCategory}: {count}")
+				
+				if preferences == []:
+					preferences_listbox.insert(tk.END, "Το μέλος δεν έχει δανειστεί κανένα βιβλίο")
+				else:
+        
+					for count, bookCategory in preferences:
+						preferences_listbox.insert(tk.END, f"{bookCategory}: {count}")
 	
 	
 
