@@ -18,7 +18,7 @@ class UsersPage(tk.Frame):
 				'member_id'
 		}
 
-		tk.Label(self, text="Ονοματεπώνυμο:").grid(row=0, column=0, sticky="w", pady=(10,0), padx=10)  
+		tk.Label(self, text="Ον/μο:").grid(row=0, column=0, sticky="w", pady=(10,0), padx=10)  
 		self.entry_field1 = tk.Entry(self, width=60)
 		self.entry_field1.grid(row=0, column=1, sticky="ew", pady=(10,0), padx=(0,200))
 
@@ -163,7 +163,7 @@ class UsersPage(tk.Frame):
 			value = member_list[index]
 			self.deleteFields()
 			self.entry_field1.insert(0, value[1])
-			self.entry_field2.insert(0, value[3])
+			self.entry_field2.insert(0, value[2])
 			self.entry_field3.insert(0, value[3])
 			self.entry_field4.insert(0, value[4])
 			self.entry_field5.insert(0, value[5])
@@ -479,7 +479,7 @@ class UsersPage(tk.Frame):
 				preferences_listbox.delete(0, tk.END)
     
 				for count, bookCategory in preferences:
-					preferences_listbox.insert(tk.END, f"{bookCategory},: {count}")
+					preferences_listbox.insert(tk.END, f"{bookCategory}: {count}")
 	
 	
 
