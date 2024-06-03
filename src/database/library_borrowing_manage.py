@@ -76,10 +76,10 @@ class library_borrowings():
             logging.error("Αποτυχία επιστροφής βιβλίου {} με κωδικό δανεισμού {}".format(book_id, borrowing_id))
             return False
     
-    def stats_books_member(self):
+    def stats_books_member(self, periodApo, periodEos):
         ''' Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT COUNT(members.member_id), members.member_id, members.name FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= "2023-01-01" AND borrowings.date <= "2023-01-31" GROUP BY members.member_id ORDER BY members.name;''')
+        cur.execute('''SELECT COUNT(members.member_id), members.name FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= ? AND borrowings.date <= ? GROUP BY members.member_id ORDER BY COUNT(members.member_id) DESC;''', (periodApo, periodEos,))
         book_member_stats = cur.fetchall()
         return book_member_stats
 
@@ -90,10 +90,10 @@ class library_borrowings():
         borrowing_member_stats = cur.fetchall()
         return borrowing_member_stats
 
-    def stats_pref_members(self):
+    def stats_pref_members(self, periodApo, periodEos):
         ''' Κατανομή προτιμήσεων όλων των μελών ανά κατηγορία για χρονική περίοδο '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT members.member_id, members.name, COUNT(books.category), books.category FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= "2023-02-01" AND borrowings.date <= "2023-02-31" GROUP BY members.name, books.category;''')
+        cur.execute('''SELECT books.category, COUNT(books.category) FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= ? AND borrowings.date <= ? GROUP BY books.category ORDER BY COUNT(books.category) DESC;''', (periodApo, periodEos,))
         pref_members_stats = cur.fetchall()
         return pref_members_stats
 

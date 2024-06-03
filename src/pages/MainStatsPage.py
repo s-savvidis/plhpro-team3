@@ -37,33 +37,10 @@ class StatsPage(tk.Frame):
 			"Επιστημονική Φαντασία":"Επιστημονική Φαντασία",
 		}
 
-		#self.defaultCategory = tk.StringVar()
-		#self.defaultCategory.set(self.categoryOptions["-"])
-
-		#tk.Label(self, text="Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο").grid(row=0, column=0, sticky="w", pady=(10,0), padx=10)  
-		#self.entry_field1 = tk.Entry(self, width=60)
-		#self.entry_field1.grid(row=0, column=1, sticky="ew", pady=(10,0), padx=(0,200))
-
-		#tk.Label(self, text="Συγγραφέας:").grid(row=1, column=0, sticky="w", padx=10)
-		#self.entry_field2 = tk.Entry(self, width=60)
-		#self.entry_field2.grid(row=1, column=1, sticky="ew", padx=(0,200))
-
-		#tk.Label(self, text="Κατηγορία:").grid(row=2, column=0, sticky="w", padx=10)
-		#self.entry_field3 = tk.OptionMenu(self, self.defaultCategory, *self.categoryOptions)
-		#self.entry_field3.grid(row=2, column=1, sticky="ew", padx=(0,200))
-
-		#tk.Label(self, text="ISBN:").grid(row=3, column=0, sticky="w", padx=10)
-		#self.entry_field4 = tk.Entry(self, width=60)
-		#self.entry_field4.grid(row=3, column=1, sticky="ew", padx=(0,200))
-
-		#tk.Label(self, text=f"Book ID:").grid(row=4, column=0, sticky="w", padx=10)
-		#self.bookIDLabel = tk.Label(self, text=f"-")
-		#self.bookIDLabel.grid(row=4, column=1, sticky="w", padx=(0,200))
-
-		search_button = tk.Button(self, text="Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο", width=50, command=lambda: self.newBookPopup())
+		search_button = tk.Button(self, text="Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο", width=50, command=lambda: self.ui_stats_books_member())
 		search_button.grid(row=0, column=0, pady=10, padx=10,sticky="w")
 
-		search_button = tk.Button(self, text="Κατανομή προτιμήσεων δανεισμού ανά μέλος", width=50, command=lambda: self.search_books())
+		search_button = tk.Button(self, text="Κατανομή προτιμήσεων δανεισμού ανά μέλος", width=50, command=lambda: self.ui_stats_borrowing_member())
 		search_button.grid(row=0, column=1, pady=10, padx=10,sticky="w")
 
 		search_button = tk.Button(self, text="Ιστορικό δανεισμού ανά μέλος", width=50, command=lambda: self.ui_stats_members())
@@ -78,16 +55,23 @@ class StatsPage(tk.Frame):
 		search_button = tk.Button(self, text="Πλήθος δανεισμών ανά φύλο", width=50, command=lambda: self.ui_stats_gender())
 		search_button.grid(row=2, column=0, pady=10, padx=10,sticky="w")
 
-		search_button = tk.Button(self, text="Κατανομή προτιμήσεων όλων των μελών ανά κατηγορία για χρονική περίοδο", width=50, command=lambda: self.search_books())
+		search_button = tk.Button(self, text="Κατανομή προτιμήσεων όλων των μελών ανά κατηγορία για χρονική περίοδο", width=50, command=lambda: self.ui_pref_members())
 		search_button.grid(row=3, column=0, pady=10, padx=10,sticky="w")
 
-		tk.Label(self, text="Από:").grid(row=4, column=0, sticky="w", pady=(10,0), padx=10)  
-		self.entry_field1 = tk.Entry(self, width=10)
-		self.entry_field1.grid(row=4, column=0, sticky="ew", pady=(20,0), padx=(0,200))
+		#
+		# Απο και Έως πλαίσια κειμένου
+		#
+		frameApo = tk.Frame(self)
+		frameApo.grid(row=4, column=0, columnspan=1, padx=5, pady=5)
+		tk.Label(frameApo, text="Από:").grid(row=4, column=0, padx=5, pady=5, sticky="e")
+		self.entry_apo = tk.Entry(frameApo, width=10)
+		self.entry_apo.grid(row=4, column=1, padx=5, pady=5, sticky="ew")
+		self.entry_apo.insert(0, "2023-02-01")
 
-		tk.Label(self, text="Εώς:").grid(row=4, column=1, sticky="w", pady=(10,0), padx=10)  
-		self.entry_field2 = tk.Entry(self, width=10)
-		self.entry_field2.grid(row=4, column=1, sticky="ew", pady=(20,0), padx=(0,200))
+		tk.Label(frameApo, text="Εώς:").grid(row=4, column=3, sticky="w", padx=5, pady=5)
+		self.entry_eos = tk.Entry(frameApo, width=10)
+		self.entry_eos.grid(row=4, column=4, sticky="ew", padx=5, pady=5)
+		self.entry_eos.insert(0, "2023-02-28")
 
 
 		#self.delete_button = tk.Button(self, text="Διαγραφή", state="disabled", width=10, command=lambda:self.deleteBookPopup())
@@ -163,6 +147,73 @@ class StatsPage(tk.Frame):
 			else:
 				myGender = "Άλλο"
 			self.result_listbox.insert(tk.END, "| {:^8} | {:<30}".format(stat[1],myGender))
+		self.switchButtonState(0)
+
+	def ui_stats_borrowing_member(self):
+		myStats = self.db.stats_borrowing_member()
+		self.bookShownData = myStats
+		self.result_listbox.delete(0, tk.END)
+		self.result_listbox.insert(tk.END, "| {:^8} | {:^30}".format("Βιβλία","Ηλικία"))
+
+		print(myStats)
+		for stat in myStats:
+			self.result_listbox.insert(tk.END, "| {:^8} | {:<30}".format(stat[1],stat[0]))
+		self.switchButtonState(0)
+	
+
+	def ui_pref_members(self):
+		""" Κατανομή προτιμήσεων όλων των μελών κατα περίοδο """
+		periodApo = self.entry_apo.get()
+		periodDisect = periodApo.strip().split("-")
+		if (len(periodDisect) != 3) or (int(periodDisect[0]) > 2024 ) or (int(periodDisect[0]) < 2023) or (int(periodDisect[1]) < 1) or (int(periodDisect[1]) > 12) or (int(periodDisect[2]) < 1) or (int(periodDisect[2]) > 31):
+			logging.error("Wrong Apo date")
+			self.wrongDatePopup()
+			return False
+
+		periodEos = self.entry_eos.get()
+		periodDisect = periodEos.strip().split("-")
+		if (len(periodDisect) != 3) or (int(periodDisect[0]) > 2024 ) or (int(periodDisect[0]) < 2023) or (int(periodDisect[1]) < 1) or (int(periodDisect[1]) > 12) or (int(periodDisect[2]) < 1) or (int(periodDisect[2]) > 31):
+			logging.error("Wrong Eos date")
+			self.wrongDatePopup()
+			return False
+
+		myStats = self.db.stats_pref_members(periodApo, periodEos)
+		self.bookShownData = myStats
+		self.result_listbox.delete(0, tk.END)
+		self.result_listbox.insert(tk.END, "| {:^8} | {:^30}".format("Κατηγορία","Πλήθος προτίμησης βιβλίων"))
+		print(myStats)
+		for stat in myStats:
+			self.result_listbox.insert(tk.END, "| {:^8} | {:<30}".format(stat[1],stat[0]))
+		self.switchButtonState(0)
+
+	def ui_stats_books_member(self):
+		""" Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο """
+		periodApo = self.entry_apo.get()
+		periodDisect = periodApo.strip().split("-")
+		if (len(periodDisect) != 3) or (int(periodDisect[0]) > 2024 ) or (int(periodDisect[0]) < 2023) or (int(periodDisect[1]) < 1) or (int(periodDisect[1]) > 12) or (int(periodDisect[2]) < 1) or (int(periodDisect[2]) > 31):
+			logging.error("Wrong Apo date")
+			self.wrongDatePopup()
+			return False
+
+		periodEos = self.entry_eos.get()
+		periodDisect = periodEos.strip().split("-")
+		if (len(periodDisect) != 3) or (int(periodDisect[0]) > 2024 ) or (int(periodDisect[0]) < 2023) or (int(periodDisect[1]) < 1) or (int(periodDisect[1]) > 12) or (int(periodDisect[2]) < 1) or (int(periodDisect[2]) > 31):
+			logging.error("Wrong Eos date")
+			self.wrongDatePopup()
+			return False
+
+		myStats = self.db.stats_books_member(periodApo, periodEos)
+		self.bookShownData = myStats
+		self.result_listbox.delete(0, tk.END)
+
+		line_format = "| {:^30} | {:<25} |"
+		line = line_format.format("Όνομα μέλους", "Πλήθος προτίμησης βιβλίων")
+		self.result_listbox.insert(tk.END, line)
+		#print(myStats)
+
+		for stat in myStats:
+			line = line_format.format(stat[1], stat[0])
+			self.result_listbox.insert(tk.END, line)
 		self.switchButtonState(0)
 
 
@@ -300,34 +351,19 @@ class StatsPage(tk.Frame):
 
 	###############################################################
 	# Pop-up code
-	def newBookPopup(self):
+	def wrongDatePopup(self):
+		""" Popup παράθυρο μηνύματος εσφαλμένης ημερομηνίας """			
 		popup = tk.Toplevel()
-		popup.title("Εισαγωγή νέου βιβλίου")
+		popup.title("Εσφαλμένη ημερομηνία")
 
 		XYPoints = self.centerizePopup(popup)
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
-
-		def addBook():
-			bookDetails = {
-				'title': entry_field1.get(),
-				'category': defaultCategory.get(),
-				'author': entry_field2.get(),
-				'isbn': entry_field4.get(),
-				'total_stock': entry_field5.get(),
-				'current_stock': entry_field6.get()
-			}
-			if (
-			entry_field1.get()
-			and entry_field2.get()
-			and entry_field4.get()
-			):
-				self.db.insert_book(bookDetails)
-				self.showBooks("")
-				self.bookIDLabel.configure(text=f"-")
-				popup.destroy()
-			else:
-				error_label = tk.Label(popup, text="Συμπληρώστε όλα τα απαραίτητα πεδία με *", fg="red")
-				error_label.place(x=40, y=1)
+        
+		tk.Label(popup, text="Εσφαλμένη ημερομηνία. Η μορφή πρέπει να είναι 2023-12-01.").grid(row=0, column=0, columnspan=2, pady=5, padx=10)
+		tk.Label(popup, text="Μεταξύ > 2023-01-01 και 2024-12-12").grid(row=1, column=0, columnspan=2, pady=5, padx=10)
+		ok_button = tk.Button(popup, text="OK", command= lambda: popup.destroy())
+		ok_button.grid(row=2, column=1, pady=10, padx=20,sticky="w")
+  
 
 	def deleteBookPopup(self):
 			popup = tk.Toplevel()
@@ -345,46 +381,6 @@ class StatsPage(tk.Frame):
 
 			def deleteAndClose():
 				self.deleteBook(self.selectedBook["book_id"])
-				self.showBooks("")
-				self.bookIDLabel.configure(text=f"-")
-				popup.destroy()
-
-	def updateBookPopup(self, bookDetails):
-			popup = tk.Toplevel()
-			popup.title("Ενημέρωση βιβλίου")
-
-			XYPoints = self.centerizePopup(self, popup)
-			popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
-
-			tk.Label(popup, text="Γενικό απόθεμα:").grid(row=0, column=0, sticky="w", padx=10)
-			tStock=tk.IntVar(value=bookDetails["total_stock"])
-			entry_field5 = tk.Spinbox(popup, from_= 0, to = 50, increment=1,
-			textvariable=tStock)
-			entry_field5.grid(row=0, column=1, sticky="ew", padx=10)
-
-			tk.Label(popup, text="Τωρινό απόθεμα:").grid(row=1, column=0, sticky="w", padx=10)
-			cStock=tk.IntVar(value=bookDetails["current_stock"])
-			entry_field6 = tk.Spinbox(popup, from_= 0, to = 50, width=4, increment=1,
-			textvariable=cStock)
-			entry_field6.grid(row=1, column=1, sticky="ew", padx=10)
-
-			insert_button = tk.Button(popup, text="Ενημέρωση", command= lambda: updateBook(entry_field5.get(), entry_field6.get()))
-			insert_button.grid(row=2, column=0, pady=10, padx=10,sticky="w")
-
-			close_button = tk.Button(popup, text="Κλείσιμο", command=popup.destroy)
-			close_button.grid(row=2, column=1, pady=10, sticky="w")
-
-			def updateBook(tStock, cStock):
-				bookDetails = {
-					'title': self.entry_field1.get(),
-					'category': self.defaultCategory.get(),
-					'author': self.entry_field2.get(),
-					'isbn': self.entry_field4.get(),
-					'total_stock': tStock,
-					'current_stock': cStock,
-					'book_id': self.selectedBook["book_id"]
-				}
-				self.db.update_book(bookDetails)
 				self.showBooks("")
 				self.bookIDLabel.configure(text=f"-")
 				popup.destroy()
