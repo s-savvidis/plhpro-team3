@@ -98,7 +98,6 @@ class library_members():
         sqlQry = ''' DELETE FROM members WHERE member_id=? '''
         try:
             cur = self.conn.cursor()
-            sqlQry = ''' DELETE FROM members WHERE member_id=? '''
             cur.execute(sqlQry, (memberId,))
             dbConn.commit()
             return True
