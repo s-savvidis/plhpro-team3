@@ -10,12 +10,12 @@ logging.basicConfig(level=logging.DEBUG)
 class library_borrowings():
     '''Κλάση διαχείρισης δανεισμών.'''
     def __init__(self, database):
-        #self.conn = conn
         try:
             self.conn = sqlite3.connect(database)
         except Exception as e:
             logging.error("Error Establishing connection to db {}. Error: {}".format(database, e))
             sys.exit(1)
+
     
     def search_borrowing(self, member_id=None):
         '''Αναζήτηση δανεισμών βάσξη member_id.'''
@@ -110,10 +110,10 @@ class library_borrowings():
             logging.error("Αποτυχία διαγραφής δανεισμού με κωδικό {}. Λάθος: {}".format(borrowingId, e))
             return False
     
-    def stats_books_member(self):
+    def stats_books_member(self, periodApo, periodEos):
         ''' Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT COUNT(members.member_id), members.member_id, members.name FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= "2023-01-01" AND borrowings.date <= "2023-01-31" GROUP BY members.member_id ORDER BY members.name;''')
+        cur.execute('''SELECT COUNT(members.member_id), members.name FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= ? AND borrowings.date <= ? GROUP BY members.member_id ORDER BY COUNT(members.member_id) DESC;''', (periodApo, periodEos,))
         book_member_stats = cur.fetchall()
         return book_member_stats
 
@@ -124,10 +124,10 @@ class library_borrowings():
         borrowing_member_stats = cur.fetchall()
         return borrowing_member_stats
 
-    def stats_pref_members(self):
+    def stats_pref_members(self, periodApo, periodEos):
         ''' Κατανομή προτιμήσεων όλων των μελών ανά κατηγορία για χρονική περίοδο '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT members.member_id, members.name, COUNT(books.category), books.category FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= "2023-02-01" AND borrowings.date <= "2023-02-31" GROUP BY members.name, books.category;''')
+        cur.execute('''SELECT books.category, COUNT(books.category) FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.date >= ? AND borrowings.date <= ? GROUP BY books.category ORDER BY COUNT(books.category) DESC;''', (periodApo, periodEos,))
         pref_members_stats = cur.fetchall()
         return pref_members_stats
 
@@ -141,7 +141,7 @@ class library_borrowings():
     def stats_author(self):
         ''' Πλήθος δανεισμών ανά συγγραφέα '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT COUNT(books.author), books.author FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id GROUP BY books.author ORDER BY books.author;''')
+        cur.execute('''SELECT COUNT(books.author), books.author FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id GROUP BY books.author ORDER BY COUNT(books.author) DESC;''')
         author_stats = cur.fetchall()
         return author_stats
 
