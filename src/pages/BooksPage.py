@@ -172,11 +172,12 @@ class BooksPage(tk.Frame):
 			for book in final_results:
 				# Ensure the book data has the expected structure
 				try:
-					print(book)
+					logging.debug(book)
 					self.result_listbox.insert(tk.END, f"{book[1]} - {book[3]} - ISBN: {book[4]} | Total stock: {book[5]} Current stock: {book[6]}")
-					print(f"Inserted into Listbox: {book[1]} - {book[3]} - ISBN: {book[4]} | Total stock: {book[5]} Current stock: {book[6]}")  # Debug print
+					
+					logging.debug("Inserted into Listbox:{} - ISBN: {} | Total stock: {} Current Stock: {}".format(book[1], book[3], book[4], book[5], book[6]))
 				except IndexError as e:
-					print("Error with book data structure:", book, e)  # Debug print for errors in data structure
+					logging.debug("Error with book data structure: {} : {}".format(book, e))  # Debug print for errors in data structure
 
 			self.switchButtonState(0)
 		else:
