@@ -72,7 +72,8 @@ class BooksPage(tk.Frame):
 		self.delete_button = tk.Button(self, text="Διαγραφή", state="disabled", width=10, command=lambda:self.deleteBookPopup())
 		self.delete_button.grid(row=2, column=2, padx=10, sticky="w")
 
-		home_button = tk.Button(self, text="Αρχική σελίδα", width=10, command=lambda:controller.show_frame(HomePage))
+		home_button = tk.Button(self, text="Αρχική σελίδα", width=10, command=lambda:self.handleHomePage(controller))
+
 		home_button.grid(row=7, column=0, columnspan=2, pady=10, padx=10, sticky="w")
 
 		listbox_frame = tk.Frame(self)
@@ -87,9 +88,6 @@ class BooksPage(tk.Frame):
 
 		self.db = dtb("src/database/members_sqlite.db")
 
-		#self.showBooks(self, self.db, "")
-		self.showBooks("")
-
 		self.result_listbox.bind("<Double-Button-1>", lambda event: self.on_double_click(event))
 
 		self.rowconfigure(6, weight=1)
@@ -103,6 +101,7 @@ class BooksPage(tk.Frame):
 		self.entry_field2.delete(0, tk.END)
 		self.defaultCategory.set(self.categoryOptions["-"])
 		self.entry_field4.delete(0, tk.END)
+		self.bookIDLabel.configure(text="")
 
 	def switchButtonState(self, value):
 		if (value == 0):
@@ -145,26 +144,24 @@ class BooksPage(tk.Frame):
 
 		if title:
 			# Αναζήτηση βάση τίτλου. Μηδενισμός υπολοίπων.
-			category = "-"
-			author = ""
-			isbn = ""
 			result_sets = self.db.search_title(title)
+			self.deleteFields()
 			logging.debug("Title Results:{}".format(result_sets))  # Debug print statement
 		if category != "-":
 			# Αναζήτηση βάση κατηγορίας. Μηδενισμός υπολοίπων.
-			author = ""
-			isbn = ""
 			result_sets = self.db.search_category(category)
+			self.deleteFields()
 			logging.debug("Category Results:{}".format(result_sets))  # Debug print statement
 		if author:
 			# Αναζήτηση βάση συγγραφέα. Μηδενισμός υπολοίπων.
-			isbn = ""
 			result_sets = self.db.search_author(author)
+			self.deleteFields()
 			logging.info("Author Results:{}".format(result_sets))  # Debug print statement
 		if isbn:
 			# Αναζήτηση βάση ISBN.
-			result_sets = set(self.db.search_isbn(isbn))
-			logging.debug("ISBN Results: {}".format(isbn_results))  # Debug print statement
+			result_sets = self.db.search_isbn(isbn)
+			self.deleteFields()
+			logging.debug("ISBN Results: {}".format(result_sets))  # Debug print statement
 
 		if result_sets:
 			final_results = result_sets
@@ -189,7 +186,7 @@ class BooksPage(tk.Frame):
 
 	def deleteBook(self, bookId):
 		""" Διαγραφή Βιβλίου με χρήση bookId """
-		self.db.delete_book(db, bookId)
+		self.db.delete_book(bookId)
 
 	def on_double_click(self, event):
 		selection = self.result_listbox.curselection()
@@ -230,6 +227,11 @@ class BooksPage(tk.Frame):
 		y = parent_y + (parent_height - popup_height) // 2
 		return {"x":x,"y":y}
 
+	def handleHomePage(self, controller):
+		self.deleteFields()
+		self.result_listbox.delete(0, tk.END) 
+		controller.show_frame(HomePage)
+		
 	###############################################################
 	# Pop-up code
 	def newBookPopup(self):
@@ -322,7 +324,7 @@ class BooksPage(tk.Frame):
 			popup = tk.Toplevel()
 			popup.title("Ενημέρωση βιβλίου")
 
-			XYPoints = self.centerizePopup(self, popup)
+			XYPoints = self.centerizePopup(popup)
 			popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
 			tk.Label(popup, text="Γενικό απόθεμα:").grid(row=0, column=0, sticky="w", padx=10)

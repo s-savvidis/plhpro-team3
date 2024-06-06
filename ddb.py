@@ -10,6 +10,7 @@ import tkinter as tk
 from src.pages.HomePage import HomePage
 from src.pages.BooksPage import BooksPage
 from src.pages.UsersPage import UsersPage
+from src.pages.BorrowingsPage import BorrowingsPage
 from src.pages.MainStatsPage import StatsPage
 
 #Ορισμός κλάσης βασικού παραθύρου
@@ -26,7 +27,7 @@ class MainWindow(tk.Tk):
 
         self.frames = {}
 
-        for F in (HomePage, BooksPage, UsersPage, StatsPage):
+        for F in (HomePage, BooksPage, UsersPage, StatsPage, BorrowingsPage):
             frame = F(container, self)
             self.frames[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")

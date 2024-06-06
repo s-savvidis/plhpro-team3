@@ -55,6 +55,13 @@ class library_books():
         bookRows = cur.fetchall()
 
         return bookRows
+    
+    def delete_book(self, bookId):
+        '''Διαγραφή βιβλίου βάση bookId'''
+        cur = self.conn.cursor()
+        sqlQry = ''' DELETE FROM books WHERE book_id=? '''
+        cur.execute(sqlQry, (bookId,))
+        self.conn.commit()
 
     def insert_book(self, bookDetails):
         '''Εισαγωγή βιβλίου στη βάση'''
@@ -80,6 +87,28 @@ class library_books():
         except Exception as e:
             logging.error("Πρόβλημα εισαγωγής βιβλίου {} στη βάση. Πρόβλημα: {}".format(bookDetails['title'], e))
             return False
+        
+    def update_book(self, bookDetails):
+        '''Επικαιροποίηση στοιχείων βιβλίου'''
+        sql = ''' UPDATE books SET title=?, category=?, author=?, isbn=?, total_stock=?, current_stock=? WHERE book_id=? '''
+        cur = self.conn.cursor()
+        dbConn = self.conn
+        try:
+            cur.execute(sql, (bookDetails['title'],
+                            bookDetails['category'],
+                            bookDetails['author'],
+                            bookDetails['isbn'],
+                            bookDetails['total_stock'],
+                            bookDetails['current_stock'],
+                            bookDetails['book_id']
+                            )
+                        )
+            logging.info("Επικαιροποίηση στοιχείων βιβλίου με κωδικό {} και τίτλο {}".format(bookDetails['book_id'],bookDetails['title']))
+            dbConn.commit()
+            return True
+        except Exception as e:
+            logging.error("Πρόβλημα επικεροποίησης στοιχείων βιβλίου {} στη βάση. Πρόβλημα: {}".format(bookDetails['title'], e))
+            return False   
 
 #######################################
 if __name__ == '__main__':
