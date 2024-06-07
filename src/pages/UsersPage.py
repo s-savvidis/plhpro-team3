@@ -129,7 +129,7 @@ class UsersPage(tk.Frame):
 			self.result_listbox.insert(tk.END, f"  {book[1]} - {book[3]} - ISBN: {book[4]} | Total stock: {book[5]} Current stock: {book[6]}") 
 		self.switchButtonState(0)
 
-	def check_email(email):
+	def check_email(self, email):
 		# Ελέγχουμε αν το email έχει την κατάλληλη μορφή
 		if "@" in email and "." in email:
 		    # Eλέγχουμε ότι το παπάκι "@" βρίσκεται πρίν από την τελευταία τελεία "."
