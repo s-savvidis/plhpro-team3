@@ -7,21 +7,17 @@ import pandas as pd
 
 logging.basicConfig(level=logging.DEBUG)
 
-def create_connection(db_file):
-    """ create a database connection to a SQLite database """
-    try:
-        conn = sqlite3.connect(db_file)
-        #sqVer = sqlite3.version
-        #logging.info(sqVer)
-        return conn
-    except Error as e:
-        logging.error(e)
-        sys.exit(1)
+
 
 class library_books():
     '''Κλάση διαχείρισης βιβλίων.'''
-    def __init__(self, conn):
-        self.conn = conn
+    def __init__(self, database):
+        #self.conn = conn
+        try:
+            self.conn = sqlite3.connect(database)
+        except Exception as e:
+            logging.error("Error Establishing connection to db {}. Error: {}".format(database, e))
+            sys.exit(1)
     
     def search_title(self, bookTitle):
         '''Αναζήτηση βιβλίου με τμήμα του τίτλου'''
@@ -29,13 +25,13 @@ class library_books():
         sqlQry = ''' SELECT * FROM books WHERE title LIKE ? '''
         cur.execute(sqlQry, ('%' + bookTitle + '%',))
         bookRows = cur.fetchall()
-
+        print(bookRows)
         return bookRows
     
     def search_author(self, bookAuthor):
         '''Αναζήτηση βιβλίων βάση συγγραφέα'''
         cur = self.conn.cursor()
-        sqlQry = ''' SELECT book_id FROM books WHERE author LIKE ? '''
+        sqlQry = ''' SELECT * FROM books WHERE author LIKE ? '''
         cur.execute(sqlQry, ('%' + bookAuthor + '%',))
         bookRows = cur.fetchall()
 
@@ -44,7 +40,7 @@ class library_books():
     def search_category(self, bookCategory):
         '''Αναζήτηση βιβλίων βάση κατηγορίας'''
         cur = self.conn.cursor()
-        sqlQry = ''' SELECT book_id FROM books WHERE category LIKE ? '''
+        sqlQry = ''' SELECT * FROM books WHERE category LIKE ? '''
         cur.execute(sqlQry, ('%' + bookCategory + '%',))
         bookRows = cur.fetchall()
 
@@ -59,6 +55,13 @@ class library_books():
         bookRows = cur.fetchall()
 
         return bookRows
+    
+    def delete_book(self, bookId):
+        '''Διαγραφή βιβλίου βάση bookId'''
+        cur = self.conn.cursor()
+        sqlQry = ''' DELETE FROM books WHERE book_id=? '''
+        cur.execute(sqlQry, (bookId,))
+        self.conn.commit()
 
     def insert_book(self, bookDetails):
         '''Εισαγωγή βιβλίου στη βάση'''
@@ -84,6 +87,28 @@ class library_books():
         except Exception as e:
             logging.error("Πρόβλημα εισαγωγής βιβλίου {} στη βάση. Πρόβλημα: {}".format(bookDetails['title'], e))
             return False
+        
+    def update_book(self, bookDetails):
+        '''Επικαιροποίηση στοιχείων βιβλίου'''
+        sql = ''' UPDATE books SET title=?, category=?, author=?, isbn=?, total_stock=?, current_stock=? WHERE book_id=? '''
+        cur = self.conn.cursor()
+        dbConn = self.conn
+        try:
+            cur.execute(sql, (bookDetails['title'],
+                            bookDetails['category'],
+                            bookDetails['author'],
+                            bookDetails['isbn'],
+                            bookDetails['total_stock'],
+                            bookDetails['current_stock'],
+                            bookDetails['book_id']
+                            )
+                        )
+            logging.info("Επικαιροποίηση στοιχείων βιβλίου με κωδικό {} και τίτλο {}".format(bookDetails['book_id'],bookDetails['title']))
+            dbConn.commit()
+            return True
+        except Exception as e:
+            logging.error("Πρόβλημα επικεροποίησης στοιχείων βιβλίου {} στη βάση. Πρόβλημα: {}".format(bookDetails['title'], e))
+            return False   
 
 #######################################
 if __name__ == '__main__':
