@@ -452,11 +452,13 @@ class UsersPage(tk.Frame):
 			start_date_label.grid(row=1, column=0, padx=10, pady=5, sticky="e")
 			start_date_entry = tk.Entry(popup)
 			start_date_entry.grid(row=1, column=1, padx=10, pady=5)
+			start_date_entry.insert(0, "2023-01-01")	   
 
 			end_date_label = tk.Label(popup, text="Έως:")
 			end_date_label.grid(row=2, column=0, padx=10, pady=5, sticky="e")
 			end_date_entry = tk.Entry(popup)
 			end_date_entry.grid(row=2, column=1, padx=10, pady=5)
+			end_date_entry.insert(0, "2024-12-31")	
 
 			preferences_listbox = tk.Listbox(popup)
 			preferences_listbox.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
