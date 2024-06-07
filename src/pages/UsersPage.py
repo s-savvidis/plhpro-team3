@@ -57,9 +57,12 @@ class UsersPage(tk.Frame):
 
 		self.recommend_button = tk.Button(self, text="Προτάσεις", state="disabled", width=10, command=lambda: self.recommendationsPopup(self.selectedMember))
 		self.recommend_button.grid(row=3, column=2, padx=10, sticky="w")
+
+		self.history_button = tk.Button(self, text="Ιστορικό", state="disabled", width=10, command=lambda: self.historyPopup(self.selectedMember))
+		self.history_button.grid(row=4, column=2, padx=10, sticky="w")  
   
 		self.preferences_button = tk.Button(self, text="Προτιμήσεις", state="disabled", width=10, command=lambda: self.preferencesPopup(self.selectedMember))
-		self.preferences_button.grid(row=4, column=2, padx=10, sticky="w")		
+		self.preferences_button.grid(row=5, column=2, padx=10, sticky="w")		
 
 		home_button = tk.Button(self, text="Αρχική σελίδα", width=10, command=lambda:controller.show_frame(HomePage))
 		home_button.grid(row=8, column=0, columnspan=2, pady=10, padx=10, sticky="w")
@@ -97,11 +100,14 @@ class UsersPage(tk.Frame):
 			self.delete_button['state'] = tk.DISABLED
 			self.recommend_button['state'] = tk.DISABLED
 			self.preferences_button['state'] = tk.DISABLED
+			self.history_button['state'] = tk.DISABLED
 		elif (value == 1):
 			self.save_button['state'] = tk.NORMAL
 			self.delete_button['state'] = tk.NORMAL
 			self.recommend_button['state'] = tk.NORMAL
 			self.preferences_button['state'] = tk.NORMAL
+			self.history_button['state'] = tk.NORMAL   
+   
 
 	def showMembers(self, memberName):
 		self.deleteFields()
@@ -159,7 +165,7 @@ class UsersPage(tk.Frame):
 		selection = self.result_listbox.curselection()
 		if selection:
 			index = selection[0]
-			member_list = list(self.memberShownData)  # Convert the set to a list
+			member_list = list(self.memberShownData) 
 			value = member_list[index]
 			self.deleteFields()
 			self.entry_field1.insert(0, value[1])
@@ -182,15 +188,15 @@ class UsersPage(tk.Frame):
         		}
 
 	def centerizePopup(self, popup):	
-		# Get the width and height of the popup window
+		
 		popup_width = popup.winfo_reqwidth()
 		popup_height = popup.winfo_reqheight()
 
-		# Get the width and height of the parent window
-		parent_x = self.winfo_rootx()  # Get the x-coordinate of the parent window
-		parent_y = self.winfo_rooty()  # Get the y-coordinate of the parent window
-		parent_width = self.winfo_width()  # Get the width of the parent window
-		parent_height = self.winfo_height()  # Get the height of the parent window
+		
+		parent_x = self.winfo_rootx()  
+		parent_y = self.winfo_rooty()  
+		parent_width = self.winfo_width()  
+		parent_height = self.winfo_height()  
 		x = parent_x + (parent_width - popup_width) // 2
 		y = parent_y + (parent_height - popup_height) // 2
 		return {"x":x,"y":y}
@@ -216,7 +222,7 @@ class UsersPage(tk.Frame):
 		] 
 
 		defaultGender = tk.StringVar()
-		defaultGender.set(genderOptions[0]) # default value
+		defaultGender.set(genderOptions[0]) 
 
 		tk.Label(popup, text="Όνοματεπώνυμο:").grid(row=0, column=0, sticky="w", pady=(10,0), padx=10)  
 		entry_field1 = tk.Entry(popup)
@@ -435,6 +441,38 @@ class UsersPage(tk.Frame):
 		close_button.grid(row=2, column=1, pady=10, sticky="e")
 		popup.rowconfigure(1, weight=1)
 		popup.columnconfigure(0, weight=1)
+  
+	def historyPopup(self, selectedMember):
+		popup = tk.Toplevel()
+		popup.title("Ιστορικό Δανεισμών")
+  
+		XYPoints = self.centerizePopup(popup)
+		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
+
+		member_id = selectedMember.get("member_id", None)
+
+		if member_id is not None:
+			tk.Label(popup, text="Ιστορικό δανεισμών του επιλεγμένου μέλους:").grid(row=0, column=0, columnspan=2, pady=10, padx=10)
+
+			history_listbox = tk.Listbox(popup)
+			history_listbox.grid(row=1, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
+
+			def showHistory():
+				history = self.db.stats_member_history(member_id)
+				if history == []:
+					history_listbox.insert(tk.END, "Το μέλος δεν έχει δανειστεί κανένα βιβλίο")
+				else:
+					for title, category, date in history:
+						history_listbox.insert(tk.END, f"{title}, {category}, {date}")
+        
+			showHistory()
+		else:
+			tk.Label(popup, text="Δεν βρέθηκε το ID μέλους.").grid(row=0, column=0, columnspan=2, pady=10, padx=10)
+    
+		close_button = tk.Button(popup, text="Κλείσιμο", command=popup.destroy)
+		close_button.grid(row=2, column=1, pady=10, sticky="e")
+		popup.rowconfigure(1, weight=1)
+		popup.columnconfigure(0, weight=1)  
    
 	def preferencesPopup(self, selectedMember):
 		popup = tk.Toplevel()
