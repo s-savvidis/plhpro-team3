@@ -2,6 +2,7 @@ import logging
 import tkinter as tk
 from src.database.library_borrowing_manage import library_borrowings as dtb
 from .HomePage import HomePage
+from datetime import date
 
 class BorrowingsPage(tk.Frame):
 	def __init__(self, parent, controller):
@@ -71,6 +72,7 @@ class BorrowingsPage(tk.Frame):
 		listbox_frame.rowconfigure(0, weight=1)
 		listbox_frame.columnconfigure(0, weight=1)
 
+	
 	### Borrowings Functions
 	def deleteFields(self):
 		self.entry_field1.delete(0, tk.END)
@@ -93,7 +95,11 @@ class BorrowingsPage(tk.Frame):
 		self.result_listbox.delete(0, tk.END) 
 
 		for borrowing in borrowings:
-			self.result_listbox.insert(tk.END, f" member_id: {borrowing[2]} - book_id: {borrowing[1]} - {borrowing[3]} - return_status: {borrowing[4]} rating: {borrowing[5]}") 
+			user = self.db.search_id_member(borrowing[2])
+			book = self.db.search_id_book(borrowing[1])
+			returnStatus = "Ναι" if borrowing[4] == 1 else "Όχι"
+
+			self.result_listbox.insert(tk.END, f" {user[0][1]} (id: {borrowing[2]}) - {book[0][1]} (id: {borrowing[1]}) - 'Εχει επιστραφεί: {returnStatus} - Βαθμολογία: {borrowing[5]}") 
 		self.switchButtonState(0)
 
 	def initialShowBorrowings(self):
@@ -103,8 +109,12 @@ class BorrowingsPage(tk.Frame):
 		self.result_listbox.delete(0, tk.END) 
 
 		for borrowing in borrowings:
-			self.result_listbox.insert(tk.END, f" member_id: {borrowing[2]} - book_id: {borrowing[1]} - {borrowing[3]} - return_status: {borrowing[4]} rating: {borrowing[5]}")  
-		self.switchButtonState(0)
+			user = self.db.search_id_member(borrowing[2])
+			book = self.db.search_id_book(borrowing[1])
+			returnStatus = "Ναι" if borrowing[4] == 1 else "Όχι"
+
+			self.result_listbox.insert(tk.END, f" {user[0][1]} (id: {borrowing[2]}) - {book[0][1]} (id: {borrowing[1]}) - 'Εχει επιστραφεί: {returnStatus} - Βαθμολογία: {borrowing[5]}") 
+		self.switchButtonState(0) 
 
 	def deleteBorrowing(self, borrowingId):
 		""" Διαγραφή δανεισμού με χρήση borrowingId """
@@ -161,6 +171,8 @@ class BorrowingsPage(tk.Frame):
 		XYPoints = self.centerizePopup(popup)
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
+		currentDate = date.today().strftime("%d-%m-%Y")
+
 		tk.Label(popup, text="ID μέλους:").grid(row=0, column=0, sticky="w", pady=(20,0), padx=10)  
 		entry_field1 = tk.Entry(popup)
 		entry_field1.grid(row=0, column=1, sticky="ew", pady=(20,0), padx=10)
@@ -171,6 +183,7 @@ class BorrowingsPage(tk.Frame):
 
 		tk.Label(popup, text="Ημερομηνία:").grid(row=2, column=0, sticky="w", padx=10)
 		entry_field3 = tk.Entry(popup)
+		entry_field3.insert(0, currentDate)
 		entry_field3.grid(row=2, column=1, sticky="ew", padx=10)
 
 		insert_button = tk.Button(popup, text="Εισαγωγή", command= lambda: newBorrowing())
@@ -244,3 +257,6 @@ class BorrowingsPage(tk.Frame):
 			else:
 				error_label = tk.Label(popup, text="Πρέπει να εισάγετε αξιολόγηση", fg="red")
 				error_label.place(x=10, y=1)
+	
+		
+
