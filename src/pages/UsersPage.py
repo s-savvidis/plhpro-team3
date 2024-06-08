@@ -165,7 +165,7 @@ class UsersPage(tk.Frame):
 		selection = self.result_listbox.curselection()
 		if selection:
 			index = selection[0]
-			member_list = list(self.memberShownData) 
+			member_list = list(self.memberShownData)  # Convert the set to a list
 			value = member_list[index]
 			self.deleteFields()
 			self.entry_field1.insert(0, value[1])
@@ -188,15 +188,15 @@ class UsersPage(tk.Frame):
         		}
 
 	def centerizePopup(self, popup):	
-		
+		# Get the width and height of the popup window
 		popup_width = popup.winfo_reqwidth()
 		popup_height = popup.winfo_reqheight()
 
-		
-		parent_x = self.winfo_rootx()  
-		parent_y = self.winfo_rooty()  
-		parent_width = self.winfo_width()  
-		parent_height = self.winfo_height()  
+		# Get the width and height of the parent window
+		parent_x = self.winfo_rootx()  # Get the x-coordinate of the parent window
+		parent_y = self.winfo_rooty()  # Get the y-coordinate of the parent window
+		parent_width = self.winfo_width()  # Get the width of the parent window
+		parent_height = self.winfo_height()  # Get the height of the parent window
 		x = parent_x + (parent_width - popup_width) // 2
 		y = parent_y + (parent_height - popup_height) // 2
 		return {"x":x,"y":y}
@@ -222,7 +222,7 @@ class UsersPage(tk.Frame):
 		] 
 
 		defaultGender = tk.StringVar()
-		defaultGender.set(genderOptions[0]) 
+		defaultGender.set(genderOptions[0]) # default value
 
 		tk.Label(popup, text="Όνοματεπώνυμο:").grid(row=0, column=0, sticky="w", pady=(10,0), padx=10)  
 		entry_field1 = tk.Entry(popup)
