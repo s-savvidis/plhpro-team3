@@ -134,7 +134,7 @@ class library_borrowings():
     def stats_member_history(self):
         ''' Ιστορικό δανεισμού ανά μέλος '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT members.member_id, members.name, books.category, books.title, borrowings.date FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.member_id=9 ORDER BY borrowings.date;''')
+        cur.execute('''SELECT members.member_id, members.name, books.category, books.title, borrowings.date FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id ORDER BY members.name, borrowings.date;''')
         member_history_stats = cur.fetchall()
         return member_history_stats
 
