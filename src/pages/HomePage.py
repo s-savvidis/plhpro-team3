@@ -1,28 +1,35 @@
 import tkinter as tk
 import os
 
-
+# Κλάση για την αρχική σελίδα του GUI
 class HomePage(tk.Frame):
-	def __init__(self, parent, controller):
+	# το όρισμα self είναι η αναφορά στον εαυτό της κλάσης HomePage. Το όρισμα parent είναι το container
+	# που φτιάξαμε για να ενσωματώσει τη σελίδα και το controller είναι η αναφορά στην κλάση του βασικού παραθύρου
+	# για να χρησιμοποιήσουμε τις μεθόδους του. Η ονομασία controller είναι συμβατική.
+	def __init__(self, parent, controller): 
+		# Αρχικοποίηση του frame
 		tk.Frame.__init__(self, parent)
+		# Δημιουργία ετικέτας επικεφαλίδας
 		header = tk.Label(self, text="Διαχείριση Δανειστικής Βιβλιοθήκης", font=("Helvetica", 24))
 		header.grid(row=0, column=0,padx=(150 ,20), columnspan=3, sticky="nsew", pady=(20, 50))
 
+		# Καθορισμός του μονοπατιού για τις εικόνες
 		script_dir = os.path.dirname(os.path.abspath(__file__))
 		images_dir = os.path.join(script_dir, "../images/")
 
+		# Εισαγωγή των σελίδων που θα εμφανίζονται στο GUI
 		from .BooksPage import BooksPage
 		from .UsersPage import UsersPage
 		from .BorrowingsPage import BorrowingsPage
-		#from .StatisticsPage import StatisticsPage
 		from .MainStatsPage import StatsPage
 	
-        # Κουμπί σελίδας βιβλίων
+        # Δημιουργία κουμπιού για τη σελίδα βιβλίων
 		books_image_path = os.path.join(images_dir, "books.png")
 		rawBooksImage = tk.PhotoImage(file=books_image_path)
-		resizedBooksImage = rawBooksImage.subsample(2, 2)  
+		resizedBooksImage = rawBooksImage.subsample(2, 2) # Μείωση μεγέθους της εικόνας κατά το μισό
+		#πλοήγηση χρησιμοποιώντας την ανώνυμη συνάρτηση lambda, έτσι ώστε να τρέχει μόνο όταν πατηθεί από τον χρήστη
 		booksButton = tk.Button(self, image=resizedBooksImage, command=lambda: controller.show_frame(BooksPage))
-		booksButton.image = resizedBooksImage  
+		booksButton.image = resizedBooksImage 
 		booksButton.grid(row=1, column=0, padx=(150, 50))
 
 		booksLabel = tk.Label(self, text="Διαχείριση βιβλίων", font=("Helvetica", 16))

@@ -102,20 +102,6 @@ class BorrowingsPage(tk.Frame):
 			self.result_listbox.insert(tk.END, f" {user[0][1]} (id: {borrowing[2]}) - {book[0][1]} (id: {borrowing[1]}) - 'Εχει επιστραφεί: {returnStatus} - Βαθμολογία: {borrowing[5]}") 
 		self.switchButtonState(0)
 
-	def initialShowBorrowings(self):
-		self.deleteFields()
-		borrowings = self.db.search_borrowing("")
-		self.bookShownData = borrowings
-		self.result_listbox.delete(0, tk.END) 
-
-		for borrowing in borrowings:
-			user = self.db.search_id_member(borrowing[2])
-			book = self.db.search_id_book(borrowing[1])
-			returnStatus = "Ναι" if borrowing[4] == 1 else "Όχι"
-
-			self.result_listbox.insert(tk.END, f" {user[0][1]} (id: {borrowing[2]}) - {book[0][1]} (id: {borrowing[1]}) - 'Εχει επιστραφεί: {returnStatus} - Βαθμολογία: {borrowing[5]}") 
-		self.switchButtonState(0) 
-
 	def deleteBorrowing(self, borrowingId):
 		""" Διαγραφή δανεισμού με χρήση borrowingId """
 		self.db.delete_borrowing(borrowingId)
@@ -258,5 +244,4 @@ class BorrowingsPage(tk.Frame):
 				error_label = tk.Label(popup, text="Πρέπει να εισάγετε αξιολόγηση", fg="red")
 				error_label.place(x=10, y=1)
 	
-		
-
+	
