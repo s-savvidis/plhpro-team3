@@ -124,10 +124,10 @@ class BooksPage(tk.Frame):
 			self.save_button['state'] = tk.NORMAL
 			self.delete_button['state'] = tk.NORMAL
 
-	def showBooks(self, title):
+	def showBooks(self):
 		""" Εμφάνιση βιβλίων με βάση τον τίτλο """
 		self.deleteFields()
-		books = self.db.search_title("")
+		books = self.db.search_title(" ")
 		self.bookShownData = books
 		self.result_listbox.delete(0, tk.END) 
 
@@ -152,6 +152,8 @@ class BooksPage(tk.Frame):
 			result_sets = self.db.search_title(title)
 			self.deleteFields()
 			logging.debug("Title Results:{}".format(result_sets))  # Μήνυμα για αποσφαλμάτωση
+		else:
+			result_sets = self.db.search_title("")
 		if category != "-":
 			# Αναζήτηση βάση κατηγορίας. Μηδενισμός υπολοίπων.
 			result_sets = self.db.search_category(category)
