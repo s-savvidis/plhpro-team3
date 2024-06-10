@@ -157,7 +157,7 @@ class BorrowingsPage(tk.Frame):
 		XYPoints = self.centerizePopup(popup)
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
 
-		currentDate = date.today().strftime("%d-%m-%Y")
+		currentDate = date.today().strftime("%Y-%m-%d")
 
 		tk.Label(popup, text="ID μέλους:").grid(row=0, column=0, sticky="w", pady=(20,0), padx=10)  
 		entry_field1 = tk.Entry(popup)
