@@ -110,6 +110,24 @@ class library_borrowings():
             logging.error("Αποτυχία διαγραφής δανεισμού με κωδικό {}. Λάθος: {}".format(borrowingId, e))
             return False
     
+    def search_id_member(self, member_id):
+        '''Αναζήτηση μέλους βάση κωδικού μέλους'''
+        cur = self.conn.cursor()
+        sqlQry = ''' SELECT * FROM members WHERE member_id=? '''
+        cur.execute(sqlQry, (member_id,))
+        member = cur.fetchall()
+
+        return member
+    
+    def search_id_book(self, book_id):
+        '''Αναζήτηση βιβλίου βάση κωδικού βιβλίου'''
+        cur = self.conn.cursor()
+        sqlQry = ''' SELECT * FROM books WHERE book_id=? '''
+        cur.execute(sqlQry, (book_id,))
+        book = cur.fetchall()
+
+        return book
+    
     def stats_books_member(self, periodApo, periodEos):
         ''' Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο '''
         cur = self.conn.cursor()
