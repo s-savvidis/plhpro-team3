@@ -2,6 +2,7 @@ import logging
 import tkinter as tk
 from src.database.library_member_manage import library_members as dtb
 from .HomePage import HomePage
+from datetime import date
 
 class UsersPage(tk.Frame):
 	def __init__(self, parent, controller):
@@ -480,6 +481,8 @@ class UsersPage(tk.Frame):
 
 		XYPoints = self.centerizePopup(popup)
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
+  
+		currentDate = date.today().strftime("%Y-%m-%d") 
 
 		member_id = selectedMember.get("member_id", None)
 
@@ -496,7 +499,7 @@ class UsersPage(tk.Frame):
 			end_date_label.grid(row=2, column=0, padx=10, pady=5, sticky="e")
 			end_date_entry = tk.Entry(popup)
 			end_date_entry.grid(row=2, column=1, padx=10, pady=5)
-			end_date_entry.insert(0, "2024-12-31")	
+			end_date_entry.insert(0, currentDate)	
 
 			preferences_listbox = tk.Listbox(popup)
 			preferences_listbox.grid(row=3, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
