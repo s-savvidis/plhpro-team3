@@ -105,7 +105,7 @@ class library_members():
             logging.error("Αποτυχία διαγραφής μέλους με κωδικό {}. Λάθος: {}".format(memberId, e))
             return False
         
-    def stats_borrowing_member(self, member_id, start_date=1900-11-11, end_date=3000-11-11):
+    def stats_borrowing_member(self, member_id, start_date, end_date):
         ''' Κατανομή προτιμήσεων δανεισμού ανά μέλος σε χρονική περίοδο που επιλέγουμε (Έτος-Μήνας-Ημέρα)'''
         cur = self.conn.cursor()
         cur.execute('''SELECT COUNT(books.category), books.category FROM borrowings 
@@ -117,7 +117,18 @@ class library_members():
                         GROUP BY books.category
                         ORDER BY COUNT(books.category) DESC;''', (start_date, end_date, member_id))
         borrowing_member_stats = cur.fetchall()
-        return borrowing_member_stats      
+        return borrowing_member_stats
+    
+    def stats_member_history(self, member_id):
+        ''' Ιστορικό δανεισμού ανά μέλος '''
+        cur = self.conn.cursor()
+        cur.execute('''SELECT books.title, books.category, borrowings.date FROM borrowings 
+                    INNER JOIN members ON borrowings.member_id=members.member_id 
+                    INNER JOIN books ON borrowings.book_id=books.book_id 
+                    WHERE borrowings.member_id = ? 
+                    ORDER BY borrowings.date DESC;''', (member_id,))
+        member_history_stats = cur.fetchall()
+        return member_history_stats          
 
     def recommendations(self, member_id):
         ''' Πρόταση δανεισμού μέσω Ratings '''
