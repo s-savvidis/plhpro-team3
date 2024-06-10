@@ -134,7 +134,7 @@ class library_borrowings():
     def stats_member_history(self):
         ''' Ιστορικό δανεισμού ανά μέλος '''
         cur = self.conn.cursor()
-        cur.execute('''SELECT members.member_id, members.name, books.category, books.title, borrowings.date FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id ORDER BY members.name, borrowings.date;''')
+        cur.execute('''SELECT members.member_id, members.name, books.category, books.title, borrowings.date FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id WHERE borrowings.member_id=9 ORDER BY borrowings.date;''')
         member_history_stats = cur.fetchall()
         return member_history_stats
 
@@ -157,7 +157,14 @@ class library_borrowings():
         cur = self.conn.cursor()
         cur.execute('''SELECT members.gender, COUNT(borrowings.borrow_id) FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id GROUP BY members.gender ORDER BY members.gender;''')
         gender_stats = cur.fetchall()
-        return gender_stats   
+        return gender_stats
+
+    def stats_member_history_all(self):
+        ''' Ιστορικό δανεισμού όλων των μελών '''
+        cur = self.conn.cursor()
+        cur.execute('''SELECT members.member_id, members.name, books.category, books.title, borrowings.date FROM borrowings INNER JOIN members ON borrowings.member_id=members.member_id INNER JOIN books ON borrowings.book_id=books.book_id ORDER BY members.name, borrowings.date;''')
+        member_history_stats = cur.fetchall()
+        return member_history_stats
         
 ######################################
 if __name__ == '__main__':

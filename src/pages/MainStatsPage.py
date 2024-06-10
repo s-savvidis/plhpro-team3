@@ -8,27 +8,28 @@ class StatsPage(tk.Frame):
 		tk.Frame.__init__(self, parent)
 
 		self.bookShownData = []
-
-		search_button = tk.Button(self, text="Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο", width=50, command=lambda: self.ui_stats_books_member())
+        
+        # Πρώτη γραμμή κουμπιών
+		search_button = tk.Button(self, text="Πλήθος βιβλίων μελών σε χρονική περίοδο", width=50, command=lambda: self.ui_stats_books_member())
 		search_button.grid(row=0, column=0, pady=10, padx=10,sticky="w")
 
-		search_button = tk.Button(self, text="Κατανομή προτιμήσεων δανεισμού ανά μέλος", width=50, command=lambda: self.ui_stats_borrowing_member())
+		search_button = tk.Button(self, text="Κατανομή προτιμήσεων μελών ανά κατηγορία", width=50, command=lambda: self.ui_pref_members())
 		search_button.grid(row=0, column=1, pady=10, padx=10,sticky="w")
 
-		search_button = tk.Button(self, text="Ιστορικό δανεισμού ανά μέλος", width=50, command=lambda: self.ui_stats_members())
+		# Δεύτερη γραμμή κουμπιών	
+		search_button = tk.Button(self, text="Ιστορικό δανεισμού μελών", width=50, command=lambda: self.ui_stats_members())
 		search_button.grid(row=1, column=1, pady=10, padx=10,sticky="w")
 
 		search_button = tk.Button(self, text="Πλήθος δανεισμών ανά συγγραφέα", width=50, command=lambda: self.ui_stats_writer())
 		search_button.grid(row=1, column=0, pady=10, padx=10,sticky="w")
 
+		# Τρίτη γραμμή κουμπιών
 		search_button = tk.Button(self, text="Πλήθος δανεισμών ανά ηλικία", width=50, command=lambda: self.ui_stats_age())
 		search_button.grid(row=2, column=1, pady=10, padx=10,sticky="w")
 
 		search_button = tk.Button(self, text="Πλήθος δανεισμών ανά φύλο", width=50, command=lambda: self.ui_stats_gender())
 		search_button.grid(row=2, column=0, pady=10, padx=10,sticky="w")
 
-		search_button = tk.Button(self, text="Κατανομή προτιμήσεων όλων των μελών ανά κατηγορία για χρονική περίοδο", width=50, command=lambda: self.ui_pref_members())
-		search_button.grid(row=3, column=0, pady=10, padx=10,sticky="w")
 
 		#
 		# Απο και Έως πλαίσια κειμένου ημερομηνίας.
@@ -50,7 +51,7 @@ class StatsPage(tk.Frame):
 
 		listbox_frame = tk.Frame(self)
 		listbox_frame.grid(row=6, column=0, padx=10, pady=10, columnspan=3, sticky="nsew")
-
+		# Τέλος Απο και Έως πλαίσια κειμένου ημερομηνίας.
 
 		custom_font = ('Courier New', 12, 'bold')
 		self.result_listbox = tk.Listbox(listbox_frame, font=custom_font)
@@ -59,10 +60,8 @@ class StatsPage(tk.Frame):
 		scrollbar = tk.Scrollbar(listbox_frame, orient="vertical", command=self.result_listbox.yview)
 		scrollbar.grid(row=0, column=1, sticky="ns")
 		self.result_listbox.config(yscrollcommand=scrollbar.set)
-
+		# Σύνδεση με ΒΔ και χρήση κλάσης
 		self.db = dtb("src/database/members_sqlite.db")
-
-		self.result_listbox.bind("<Double-Button-1>", lambda event: self.on_double_click(event))
 
 		self.rowconfigure(6, weight=1)
 		self.columnconfigure(0, weight=1)
@@ -71,17 +70,18 @@ class StatsPage(tk.Frame):
 
 	### Statistics Functions
 	def ui_stats_writer(self):
+		""" Πλήθος δανεισμών ανα συγγραφέα """
 		myStats = self.db.stats_author()
 		self.bookShownData = myStats
 		self.result_listbox.delete(0, tk.END) 
 		self.result_listbox.insert(tk.END, f"|{'Βιβλία':^8} | {'Συγγραφέας':^30}|")
-		self.result_listbox.insert(tk.END, "+"+"-"*41+"+")	
+		#self.result_listbox.insert(tk.END, "+"+"-"*41+"+")
 
 		for stat in myStats:
 			self.result_listbox.insert(tk.END, f"| {stat[0]:<8}| {stat[1]:<30}|")	
-		self.switchButtonState(0)
 
 	def ui_stats_age(self):
+		""" Πλήθος δανεισμών ανα ηλικία """
 		myStats = self.db.stats_age()
 		self.bookShownData = myStats
 		self.result_listbox.delete(0, tk.END)
@@ -89,24 +89,24 @@ class StatsPage(tk.Frame):
 
 		for stat in myStats:
 			self.result_listbox.insert(tk.END, "| {:^8d} | {:^10d} |".format(stat[1],stat[0]))
-		self.switchButtonState(0)
 
 	def ui_stats_members(self):
-		myStats = self.db.stats_member_history()
+		""" Δανεισμοί όλων των μελών """	
+		myStats = self.db.stats_member_history_all()
 		self.bookShownData = myStats
 		self.result_listbox.delete(0, tk.END)
 		self.result_listbox.insert(tk.END, f"|{'Mέλος':<30} | {'Κατηγορία':<25} | {'Τίτλος':<50} | {'Ημ. δανεισμού':<14} |")
 
 		for stat in myStats:
 			self.result_listbox.insert(tk.END, f"|{stat[1]:<30} | {stat[2]:<25} | {stat[3]:<50} | {stat[4]:<14} |")
-		self.switchButtonState(0)
 
 	def ui_stats_gender(self):
+		""" Πλήθος δανεισμών ανα φύλο """
 		myStats = self.db.stats_gender()
 		myGender = ""
 		self.bookShownData = myStats
 		self.result_listbox.delete(0, tk.END)
-		self.result_listbox.insert(tk.END, "| {:^8} | {:^10} |".format("Βιβλία","Ηλικία"))
+		self.result_listbox.insert(tk.END, "| {:^8} | {:^10} |".format("Βιβλία","Φύλο"))
 
 		for stat in myStats:
 			if stat[0] == "m":
@@ -116,22 +116,9 @@ class StatsPage(tk.Frame):
 			else:
 				myGender = "Άλλο"
 			self.result_listbox.insert(tk.END, "| {:^8} | {:^10} |".format(stat[1],myGender))
-		self.switchButtonState(0)
-
-	def ui_stats_borrowing_member(self):
-		myStats = self.db.stats_borrowing_member()
-		self.bookShownData = myStats
-		self.result_listbox.delete(0, tk.END)
-		self.result_listbox.insert(tk.END, "| {:^8} | {:^30} |".format("Βιβλία","Ηλικία"))
-
-		print(myStats)
-		for stat in myStats:
-			self.result_listbox.insert(tk.END, "| {:^8} | {:<30} |".format(stat[1],stat[0]))
-		self.switchButtonState(0)
-	
 
 	def ui_pref_members(self):
-		""" Κατανομή προτιμήσεων όλων των μελών κατα περίοδο """
+		""" Κατανομή προτιμήσεων μελών ανα κατηγορία """
 		periodApo = self.entry_apo.get()
 		periodDissect = periodApo.strip().split("-")
 		if (len(periodDissect) != 3) or (int(periodDissect[0]) > 2024 ) or (int(periodDissect[0]) < 2023) or (int(periodDissect[1]) < 1) or (int(periodDissect[1]) > 12) or (int(periodDissect[2]) < 1) or (int(periodDissect[2]) > 31):
@@ -149,11 +136,10 @@ class StatsPage(tk.Frame):
 		myStats = self.db.stats_pref_members(periodApo, periodEos)
 		self.bookShownData = myStats
 		self.result_listbox.delete(0, tk.END)
-		self.result_listbox.insert(tk.END, "| {:^11} | {:^30} |".format("Κατηγορία","Πλήθος προτίμησης βιβλίων"))
+		self.result_listbox.insert(tk.END, "| {:^11} | {:^30} |".format("Αρ. Βιβλίων","Κατηγορία βιβλίων"))
 		print(myStats)
 		for stat in myStats:
 			self.result_listbox.insert(tk.END, "| {:^11} | {:<30} |".format(stat[1],stat[0]))
-		self.switchButtonState(0)
 
 	def ui_stats_books_member(self):
 		""" Πλήθος βιβλίων ανα μέλος σε χρονική περίοδο """
@@ -183,21 +169,12 @@ class StatsPage(tk.Frame):
 		for stat in myStats:
 			line = line_format.format(stat[1], stat[0])
 			self.result_listbox.insert(tk.END, line)
-		self.switchButtonState(0)
 
 
 	def deleteFields(self):
 		self.entry_field1.delete(0, tk.END)
 		self.entry_field2.delete(0, tk.END)
 		self.entry_field4.delete(0, tk.END)
-
-	def switchButtonState(self, value):
-		if (value == 0):
-			self.save_button['state'] = tk.DISABLED
-			self.delete_button['state'] = tk.DISABLED
-		elif (value == 1):
-			self.save_button['state'] = tk.NORMAL
-			self.delete_button['state'] = tk.NORMAL
 
 	def on_double_click(self, event):
 		selection = self.result_listbox.curselection()
@@ -212,7 +189,6 @@ class StatsPage(tk.Frame):
 			self.entry_field4.insert(0, value[4])
 			self.bookID = value[0]
 			self.bookIDLabel.configure(text=f"{value[0]}")
-			self.switchButtonState(1)
 
 	def centerizePopup(self, popup):	
 		# Get the width and height of the popup window
