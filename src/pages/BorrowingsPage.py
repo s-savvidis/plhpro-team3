@@ -102,9 +102,9 @@ class BorrowingsPage(tk.Frame):
 			self.result_listbox.insert(tk.END, f" {user[0][1]} (id: {borrowing[2]}) - {book[0][1]} (id: {borrowing[1]}) - 'Εχει επιστραφεί: {returnStatus} - Βαθμολογία: {borrowing[5]}") 
 		self.switchButtonState(0)
 
-	def deleteBorrowing(self, borrowingId):
+	def deleteBorrowing(self, borrowingId, book_id):
 		""" Διαγραφή δανεισμού με χρήση borrowingId """
-		self.db.delete_borrowing(borrowingId)
+		self.db.delete_borrowing(borrowingId, book_id)
 
 	def on_double_click(self, event):
 		selection = self.result_listbox.curselection()
@@ -199,6 +199,7 @@ class BorrowingsPage(tk.Frame):
 
 	def deleteBorrowingPopup(self):
 		popup = tk.Toplevel()
+		book_id = self.entry_field2.get()
 
 		XYPoints = self.centerizePopup(popup)
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
@@ -212,7 +213,7 @@ class BorrowingsPage(tk.Frame):
 		close_button.grid(row=1, column=1, pady=10, padx=20, sticky="e")
 
 		def deleteAndClose():
-			self.deleteBorrowing(self.selectedBorrowing["borrow_id"])
+			self.deleteBorrowing(self.selectedBorrowing["borrow_id"], book_id)
 			self.showBorrowings("")
 			self.borrowingIDLabel.configure(text=f"-")
 			popup.destroy()
