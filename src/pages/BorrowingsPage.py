@@ -182,12 +182,17 @@ class BorrowingsPage(tk.Frame):
 			member_id = entry_field1.get()
 			book_id = entry_field2.get()
 			date = entry_field3.get()
+
 			if entry_field1.get() and entry_field2.get() and entry_field3.get():
 	
-				self.db.borrow_book(member_id, book_id, date)
-				self.showBorrowings("") 
-				self.borrowingIDLabel.configure(text=f"-")
-				popup.destroy()
+				stockCheck = self.db.borrow_book(member_id, book_id, date)
+				if stockCheck == False:
+					error_label = tk.Label(popup, text="Το βιβλίο δεν είναι διαθέσιμο", fg="red")
+					error_label.place(x=10, y=1)
+				else:
+					self.showBorrowings("") 
+					self.borrowingIDLabel.configure(text=f"-")
+					popup.destroy()
 			else:
 				error_label = tk.Label(popup, text="Πρέπει να συμπληρώσετε όλα τα πεδία", fg="red")
 				error_label.place(x=10, y=1)

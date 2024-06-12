@@ -41,6 +41,7 @@ class library_borrowings():
         cur.execute('''SELECT current_stock FROM books WHERE book_id = ?''', (book_id,))
         stock = cur.fetchone()[0]
         if stock == 0:
+            logging.info("Το βιβλίο με κωδικό {} δεν είναι διαθέσιμο".format(book_id,))
             return False
 
         else:
