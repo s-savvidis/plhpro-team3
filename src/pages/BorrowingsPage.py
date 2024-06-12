@@ -102,9 +102,9 @@ class BorrowingsPage(tk.Frame):
 			self.result_listbox.insert(tk.END, f" {user[0][1]} (id: {borrowing[2]}) - {book[0][1]} (id: {borrowing[1]}) - 'Εχει επιστραφεί: {returnStatus} - Βαθμολογία: {borrowing[5]}") 
 		self.switchButtonState(0)
 
-	def deleteBorrowing(self, borrowingId):
+	def deleteBorrowing(self, borrowingId, book_id):
 		""" Διαγραφή δανεισμού με χρήση borrowingId """
-		self.db.delete_borrowing(borrowingId)
+		self.db.delete_borrowing(borrowingId, book_id)
 
 	def on_double_click(self, event):
 		selection = self.result_listbox.curselection()
@@ -182,18 +182,24 @@ class BorrowingsPage(tk.Frame):
 			member_id = entry_field1.get()
 			book_id = entry_field2.get()
 			date = entry_field3.get()
+
 			if entry_field1.get() and entry_field2.get() and entry_field3.get():
 	
-				self.db.borrow_book(member_id, book_id, date)
-				self.showBorrowings("") 
-				self.borrowingIDLabel.configure(text=f"-")
-				popup.destroy()
+				stockCheck = self.db.borrow_book(member_id, book_id, date)
+				if stockCheck == False:
+					error_label = tk.Label(popup, text="Το βιβλίο δεν είναι διαθέσιμο", fg="red")
+					error_label.place(x=10, y=1)
+				else:
+					self.showBorrowings("") 
+					self.borrowingIDLabel.configure(text=f"-")
+					popup.destroy()
 			else:
 				error_label = tk.Label(popup, text="Πρέπει να συμπληρώσετε όλα τα πεδία", fg="red")
 				error_label.place(x=10, y=1)
 
 	def deleteBorrowingPopup(self):
 		popup = tk.Toplevel()
+		book_id = self.entry_field2.get()
 
 		XYPoints = self.centerizePopup(popup)
 		popup.geometry(f"+{XYPoints['x']}+{XYPoints['y']}")
@@ -207,7 +213,7 @@ class BorrowingsPage(tk.Frame):
 		close_button.grid(row=1, column=1, pady=10, padx=20, sticky="e")
 
 		def deleteAndClose():
-			self.deleteBorrowing(self.selectedBorrowing["borrow_id"])
+			self.deleteBorrowing(self.selectedBorrowing["borrow_id"], book_id)
 			self.showBorrowings("")
 			self.borrowingIDLabel.configure(text=f"-")
 			popup.destroy()

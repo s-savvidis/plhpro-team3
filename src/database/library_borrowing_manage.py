@@ -41,6 +41,7 @@ class library_borrowings():
         cur.execute('''SELECT current_stock FROM books WHERE book_id = ?''', (book_id,))
         stock = cur.fetchone()[0]
         if stock == 0:
+            logging.info("Το βιβλίο με κωδικό {} δεν είναι διαθέσιμο".format(book_id,))
             return False
 
         else:
@@ -96,16 +97,23 @@ class library_borrowings():
             logging.error("Αποτυχία επιστροφής βιβλίου {} με κωδικό δανεισμού {}".format(book_id, borrowing_id))
             return False   
 
-    def delete_borrowing(self, borrowingId):
+    def delete_borrowing(self, borrowingId, book_id):
         '''Διαγραφή δανεισμού βάση borrowing Id'''
         dbConn = self.conn
         sqlQry = ''' DELETE FROM borrowings WHERE borrow_id=? '''
+        cur = self.conn.cursor()
+        cur.execute('''SELECT return_status FROM borrowings WHERE borrow_id = ?''', (borrowingId,))
+        status = cur.fetchone()[0]
         try:
-            cur = self.conn.cursor()
-            sqlQry = ''' DELETE FROM borrowings WHERE borrow_id=? '''
-            cur.execute(sqlQry, (borrowingId,))
-            dbConn.commit()
-            return True
+            if status == 0:
+                cur.execute('''UPDATE books SET current_stock = current_stock + 1 WHERE book_id = ?''', (book_id,))
+                cur.execute(sqlQry, (borrowingId,))
+                dbConn.commit()
+                return True
+            else:
+                cur.execute(sqlQry, (borrowingId,))
+                dbConn.commit()
+                return True
         except Exception as e:
             logging.error("Αποτυχία διαγραφής δανεισμού με κωδικό {}. Λάθος: {}".format(borrowingId, e))
             return False
